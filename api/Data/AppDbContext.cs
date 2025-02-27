@@ -27,12 +27,21 @@ namespace api.Data
             builder.Entity<Portfolio>()
             .HasOne(u => u.AppUser)
             .WithMany(u => u.Portfolios)
-            .HasForeignKey(p => p.AppUserId);
+            .HasForeignKey(p => p.AppUserId)
+            .OnDelete(DeleteBehavior.Cascade);
 
             builder.Entity<Portfolio>()
             .HasOne(u => u.Coin)
             .WithMany(u => u.Portfolios)
-            .HasForeignKey(p => p.CoinId);
+            .HasForeignKey(p => p.CoinId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+
+            builder.Entity<Comment>()
+            .HasOne(c => c.Coin)
+            .WithMany()
+            .HasForeignKey(c => c.CoinId)
+            .OnDelete(DeleteBehavior.Cascade);
 
             List<IdentityRole> roles = new List<IdentityRole>
             {

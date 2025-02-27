@@ -1,24 +1,20 @@
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
+using api.DTO.Comment;
 
-namespace api.Models
+namespace api.DTO.Coin
 {
-    [Table("Coins")]
-    public class Coin
+    public class CoinAndBalanceDto
     {
         public int Id { get; set; }
         public string CoinName { get; set;}=string.Empty;
         public string Symbol { get; set; } =string.Empty;
         public decimal Price { get; set;}
-
         public long MarketCap {get; set;}
+        public decimal Balance { get;set;}
+        public decimal NumOfCoins {get; set;}
 
-
-        public List<Comment> Comments {get;set;} = new List<Comment>();
-
-        public List<Portfolio> Portfolios {get; set;} = new List<Portfolio>();
     }
 }

@@ -20,5 +20,6 @@ namespace api.DTO.Coin
         [Required]
         [Range(1, 1000000000)]
         public long MarketCap {get; set;}
+
     }
 }

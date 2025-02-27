@@ -36,7 +36,7 @@ namespace api.Controllers
         }
         [HttpPost]
         [Authorize]
-        public async Task<IActionResult> AddPortfolio(string symbol)
+        public async Task<IActionResult> AddPortfolio(string symbol, decimal NumOfCoins)
         {
             var username = User.GetUsernameFromClaim();
             var appUser = await _userManager.FindByNameAsync(username);
@@ -53,6 +53,8 @@ namespace api.Controllers
             {
                 CoinId=coin.Id,
                 AppUserId=appUser.Id,
+                NumOfCoins=NumOfCoins,
+                Balance=coin.Price * NumOfCoins
             };
             await _portfolioRepo.CreatePortfolio(portfolioModel);
             if(portfolioModel == null) 

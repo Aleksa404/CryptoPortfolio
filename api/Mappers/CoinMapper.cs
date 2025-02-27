@@ -17,6 +17,7 @@ namespace api.Mappers
                 CoinName=CoinModel.CoinName,
                 Symbol=CoinModel.Symbol,
                 Price=CoinModel.Price,
+
                 MarketCap=CoinModel.MarketCap,
                 Comments= CoinModel.Comments.Select(c => c.ToCommentDto()).ToList()
             };

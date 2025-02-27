@@ -55,6 +55,7 @@ namespace api.Controllers
                 return BadRequest(ModelState);
 
             var coinModel=coinDto.ToCoinFromCreateDto();
+
             await _coinRepo.CreateAsync(coinModel);
             return CreatedAtAction(nameof(GetbyId), new {id=coinModel.Id}, coinModel.ToCoinDTO());
         }
@@ -86,7 +87,8 @@ namespace api.Controllers
             {
                 return NotFound();
             }
-            return NoContent();
+
+            return Ok($"{coinModel.CoinName} deleted");
         }
 
     }

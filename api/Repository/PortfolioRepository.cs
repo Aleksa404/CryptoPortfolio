@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using api.Data;
+using api.DTO.Coin;
 using api.Interfaces;
 using api.Models;
 using Microsoft.EntityFrameworkCore;
@@ -35,17 +36,22 @@ namespace api.Repository
             return portfolioModel;
         }
 
-        public async Task<List<Coin>> GetUserPortfolio(AppUser user)
+        public async Task<List<CoinAndBalanceDto>> GetUserPortfolio(AppUser user)
         {
             return await _context.Portfolios.Where(u=> u.AppUserId == user.Id)
-            .Select(coin => new Coin
+            .Select(portf => new CoinAndBalanceDto
             {
-                Id=coin.CoinId,
-                Symbol=coin.Coin.Symbol,
-                CoinName=coin.Coin.CoinName,
-                Price=coin.Coin.Price,
-                MarketCap=coin.Coin.MarketCap
+                Id=portf.CoinId,
+                Symbol=portf.Coin.Symbol,
+                CoinName=portf.Coin.CoinName,
+                Price=portf.Coin.Price,
+                MarketCap=portf.Coin.MarketCap,
+                NumOfCoins=portf.NumOfCoins,
+                Balance = portf.Balance
             }).ToListAsync();
+
+
+
         }
     
         

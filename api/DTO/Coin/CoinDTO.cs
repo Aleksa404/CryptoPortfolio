@@ -13,6 +13,7 @@ namespace api.DTO.Coin
         public string CoinName { get; set;} = string.Empty;
         public string Symbol { get; set; } =string.Empty;
         public decimal Price { get; set; }
+
         public long MarketCap {get; set;}
         public List<CommentDTO>? Comments { get; set;}
     }
