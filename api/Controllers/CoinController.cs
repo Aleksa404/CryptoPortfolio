@@ -7,6 +7,7 @@ using api.DTO.Coin;
 using api.Helpers;
 using api.Interfaces;
 using api.Mappers;
+using api.Service;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -18,31 +19,59 @@ namespace api.Controllers
     {
         private readonly AppDbContext _context;
         private readonly ICoinRepository _coinRepo;
-        public CoinController(AppDbContext context, ICoinRepository coinRepo)
+
+        private readonly CryptoPriceService _cryptoPriceService;
+        public CoinController(AppDbContext context, ICoinRepository coinRepo, CryptoPriceService cryptoPriceService)
         {
-            _coinRepo=coinRepo;
-            _context=context;
+            _cryptoPriceService = cryptoPriceService;
+            _coinRepo = coinRepo;
+            _context = context;
         }
+
+        [HttpGet("price/{coinId}")]
+        public async Task<IActionResult> GetPriceFromApi(string coinId)
+        {
+            try
+            {
+                var price = await _cryptoPriceService.GetCryptoPriceAsync(coinId);
+                if (price == -1)
+                {
+                    return NotFound(new { Error = "Coin not found" });
+                }
+                return Ok(new { Coin = coinId, Price = price });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { Error = ex.Message });
+            }
+        }
+        [HttpGet("allcoins")]
+        public async Task<List<api.Service.CoinMarketDto>> GetAllCoinsFromApi()
+        {
+            return await _cryptoPriceService.GetAllCoins();
+
+        }
+
         [HttpGet]
         [Authorize]
         public async Task<IActionResult> GetAll([FromQuery] QueryObject query)
         {
-            if(!ModelState.IsValid)
+            if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
             var coins = await _coinRepo.GetAllAsync(query);
-            var coinDto = coins.Select( s=> s.ToCoinDTO()).ToList();
+            var coinDto = coins.Select(s => s.ToCoinDTO()).ToList();
 
             return Ok(coinDto);
         }
         [HttpGet("{id:int}")]
         public async Task<IActionResult> GetbyId([FromRoute] int id)
         {
-            if(!ModelState.IsValid)
+            if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
             var coin = await _coinRepo.GetByIdAsync(id);
-            if(coin == null)
+            if (coin == null)
             {
                 return NotFound();
             }
@@ -51,23 +80,23 @@ namespace api.Controllers
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateCoinDTO coinDto)
         {
-            if(!ModelState.IsValid)
+            if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var coinModel=coinDto.ToCoinFromCreateDto();
+            var coinModel = coinDto.ToCoinFromCreateDto();
 
             await _coinRepo.CreateAsync(coinModel);
-            return CreatedAtAction(nameof(GetbyId), new {id=coinModel.Id}, coinModel.ToCoinDTO());
+            return CreatedAtAction(nameof(GetbyId), new { id = coinModel.Id }, coinModel.ToCoinDTO());
         }
         [HttpPut]
         [Route("{id:int}")]
         public async Task<IActionResult> Update([FromRoute] int id, [FromBody] UpdateCoinDTO updateDto)
         {
-            if(!ModelState.IsValid)
+            if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
             var coinModel = await _coinRepo.UpdateAsync(id, updateDto);
-            if(coinModel == null)
+            if (coinModel == null)
             {
                 return NotFound();
             }
@@ -79,17 +108,22 @@ namespace api.Controllers
         [Route("{id:int}")]
         public async Task<IActionResult> Delete([FromRoute] int id)
         {
-            if(!ModelState.IsValid)
+            if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
             var coinModel = await _coinRepo.DeleteAsync(id);
-            if(coinModel == null)
+            if (coinModel == null)
             {
                 return NotFound();
             }
 
             return Ok($"{coinModel.CoinName} deleted");
         }
+
+
+
+
+
 
     }
 }
