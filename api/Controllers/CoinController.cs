@@ -45,10 +45,11 @@ namespace api.Controllers
                 return BadRequest(new { Error = ex.Message });
             }
         }
-        [HttpGet("allcoins")]
-        public async Task<List<api.Service.CoinMarketDto>> GetAllCoinsFromApi()
+        [HttpGet("all")]
+        public async Task<IActionResult> GetAllCoinsFromApi([FromQuery] int page = 1, [FromQuery] string search = "")
         {
-            return await _cryptoPriceService.GetAllCoins();
+            var coins = await _cryptoPriceService.GetAllCoins(page, search);
+            return Ok(new { coins = coins, totalPages = 10 });
 
         }
 

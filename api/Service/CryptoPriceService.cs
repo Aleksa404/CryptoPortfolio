@@ -53,27 +53,51 @@ namespace api.Service
             //     : 0;
         }
 
-        public async Task<List<CoinMarketDto>> GetAllCoins()
+        public async Task<List<CoinMarketDto>> GetAllCoins(int page, string search)
         {
+            if (string.IsNullOrWhiteSpace(search))
+            {
+                if (_memoryCache.TryGetValue($"AllCoins_page_{page}_search_{search}", out List<CoinMarketDto> allCoins))
+                {
+                    return allCoins;
+                }
+            }
+
             try
             {
-                var url = "https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&per_page=2";
-                var response = await _httpClient.GetStringAsync(url);
+                var url = $"https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=20&page={page}";
 
-                if (response == null)
-                {
-                    return new List<CoinMarketDto>();
-                }
+                if (!string.IsNullOrWhiteSpace(search))
+                    url += $"&ids={search.ToLower()}";
+                // else
+                //     url = $"https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=20&page={page}";
 
-                var coins = JsonConvert.DeserializeObject<List<CoinMarketDto>>(response);
+                var res = await _httpClient.GetStringAsync(url);
+                var coins = JsonConvert.DeserializeObject<List<CoinMarketDto>>(res);
+
+                _memoryCache.Set($"AllCoins_page_{page}_search_{search}", coins, TimeSpan.FromMinutes(5));
 
                 return coins;
             }
+
+            // var url = "https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&per_page=2";
+            // var response = await _httpClient.GetStringAsync(url);
+
+            // if (response == null)
+            // {
+            //     return new List<CoinMarketDto>();
+            // }
+
+            // var coins = JsonConvert.DeserializeObject<List<CoinMarketDto>>(response);
+
+            // return coins;
+
             catch (Exception ex)
             {
                 Console.WriteLine("Error fetching all coins: " + ex.Message);
                 return new List<CoinMarketDto>();
             }
+
 
 
         }
@@ -87,4 +111,5 @@ namespace api.Service
         public decimal Current_price { get; set; }
         public decimal Market_cap { get; set; }
     }
+
 }
