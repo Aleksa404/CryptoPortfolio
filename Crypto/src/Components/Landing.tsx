@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { Link } from "react-router-dom";
 
 interface Coin {
   id: string;
@@ -35,8 +36,19 @@ const Landing = () => {
     return () => clearTimeout(delayDebounce);
   }, [page, search]);
 
-  const handleAdd = async (coinId: string) => {
-    await axios.post("/api/portfolio", { coinId });
+  const handleAdd = async (name: string, numOfCoins: number) => {
+    try {
+      console.log(name, numOfCoins);
+      await axios.post(
+        `http://localhost:5270/api/portfolio/addPortfolio?name=${name}&numOfCoins=${numOfCoins}`
+      );
+    } catch (error) {
+      console.error("Error adding to portfolio:", error);
+    }
+  };
+
+  const handleClick = (coin: Coin) => {
+    window.location.href = `/coin/${coin.id}`;
   };
 
   return (
@@ -52,19 +64,27 @@ const Landing = () => {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {coins.map((coin) => (
           <div
+            className="flex flex-col items-center border-1 backdrop-blur-2xl border-gray-300 rounded-lg p-4 shadow-md hover:shadow-lg transition-shadow duration-300"
             key={coin.id}
-            className="border p-2 rounded flex align-center flex-col justify-center"
           >
-            <h2 className="text-lg font-semibold mb-2 justify-center flex items-center">
-              {coin.name} <p className="uppercase">({coin.symbol})</p>
-            </h2>
-            <p className="justify-center flex">Price: ${coin.current_price}</p>
-            <p className="justify-center flex">
-              Market Cap: ${coin.market_cap}
-            </p>
+            <Link
+              to={`/coin/${coin.name}`}
+              key={coin.id}
+              className="border p-2 rounded flex align-center flex-col justify-center border-gray-300 rounded-lg p-4 shadow-md hover:shadow-lg transition-shadow duration-300"
+            >
+              <h2 className="text-lg font-semibold mb-2 justify-center flex items-center">
+                {coin.name} <p className="uppercase">({coin.symbol})</p>
+              </h2>
+              <p className="justify-center flex">
+                Price: ${coin.current_price}
+              </p>
+              <p className="justify-center flex">
+                Market Cap: ${coin.market_cap}
+              </p>
+            </Link>
             <button
-              className="bg-blue-500 text-white px-2 py-1 mt-2"
-              onClick={() => handleAdd(coin.id)}
+              className="bg-blue-500 text-white px-2 py-1 mt-2 rounded"
+              onClick={() => handleAdd(coin.name, 1)}
             >
               Add to Portfolio
             </button>

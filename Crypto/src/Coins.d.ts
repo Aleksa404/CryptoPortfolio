@@ -1,4 +1,5 @@
 export interface coinSearch {
+  id: number;
   coinName: string;
   price: number;
   symbol: string;

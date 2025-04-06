@@ -14,7 +14,8 @@ const CoinPage = (props: Props) => {
   useEffect(() => {
     const getCoin = async () => {
       const result = await getCoinProfile(ticker!);
-      setCoin(result?.data[0]);
+      setCoin(result?.data);
+      console.log(result?.data);
     };
     getCoin();
   }, []);
