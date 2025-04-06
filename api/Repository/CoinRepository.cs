@@ -7,6 +7,8 @@ using api.DTO.Coin;
 using api.Helpers;
 using api.Interfaces;
 using api.Models;
+using api.Service;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace api.Repository
@@ -14,8 +16,10 @@ namespace api.Repository
     public class CoinRepository : ICoinRepository
     {
         private readonly AppDbContext _context;
-        public CoinRepository(AppDbContext context)
+        private readonly CryptoPriceService _cryptoPriceService;
+        public CoinRepository(AppDbContext context, CryptoPriceService cryptoPriceService)
         {
+            _cryptoPriceService = cryptoPriceService;
             _context = context;
         }
         public async Task<Coin> CreateAsync(Coin coinModel)
@@ -68,8 +72,13 @@ namespace api.Repository
 
         public async Task<Coin> GetBySymbolAsync(string symbol)
         {
-            return await _context.Coins.FirstOrDefaultAsync(s => s.Symbol == symbol);
+            return await _context.Coins.FirstOrDefaultAsync(s => s.Symbol.ToLower() == symbol.ToLower());
         }
+        public async Task<Coin> GetByNameAsync(string name)
+        {
+            return await _context.Coins.FirstOrDefaultAsync(s => s.CoinName.ToLower() == name.ToLower());
+        }
+
 
         public Task<bool> CoinExists(int id)
         {
@@ -92,6 +101,28 @@ namespace api.Repository
 
             await _context.SaveChangesAsync();
             return existingCoin;
+        }
+
+
+        public async void PopulateDatabase()
+        {
+            var coinList = await _cryptoPriceService.GetAllCoins(1, null);
+            foreach (var coin in coinList)
+            {
+                var existingCoin = await _context.Coins.FirstOrDefaultAsync(c => c.Symbol == coin.Symbol);
+                if (existingCoin == null)
+                {
+                    var newCoin = new Coin
+                    {
+                        Symbol = coin.Symbol,
+                        CoinName = coin.Name,
+                        Price = coin.Current_price,
+                        MarketCap = coin.Market_cap
+                    };
+                    await _context.Coins.AddAsync(newCoin);
+                    await _context.SaveChangesAsync();
+                }
+            }
         }
 
     }

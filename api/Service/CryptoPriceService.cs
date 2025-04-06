@@ -101,6 +101,8 @@ namespace api.Service
 
 
         }
+
+
     }
 
     public class CoinMarketDto

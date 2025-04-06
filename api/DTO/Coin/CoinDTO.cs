@@ -10,11 +10,11 @@ namespace api.DTO.Coin
     public class CoinDTO
     {
         public int Id { get; set; }
-        public string CoinName { get; set;} = string.Empty;
-        public string Symbol { get; set; } =string.Empty;
+        public string CoinName { get; set; } = string.Empty;
+        public string Symbol { get; set; } = string.Empty;
         public decimal Price { get; set; }
 
-        public long MarketCap {get; set;}
-        public List<CommentDTO>? Comments { get; set;}
+        public decimal MarketCap { get; set; }
+        public List<CommentDTO>? Comments { get; set; }
     }
 }

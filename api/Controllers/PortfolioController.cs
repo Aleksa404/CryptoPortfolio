@@ -34,18 +34,18 @@ namespace api.Controllers
             var userPortfolio = await _portfolioRepo.GetUserPortfolio(appUser);
             return Ok(userPortfolio);
         }
-        [HttpPost]
+        [HttpPost("addPortfolio")]
         [Authorize]
-        public async Task<IActionResult> AddPortfolio(string symbol, decimal NumOfCoins)
+        public async Task<IActionResult> AddPortfolio(string name, decimal numOfCoins)
         {
             var username = User.GetUsernameFromClaim();
             var appUser = await _userManager.FindByNameAsync(username);
-            var coin = await _coinRepo.GetBySymbolAsync(symbol);
+            var coin = await _coinRepo.GetByNameAsync(name);
 
             if (coin == null) return BadRequest("coin not found");
 
             var userPortfolio = await _portfolioRepo.GetUserPortfolio(appUser);
-            if (userPortfolio.Any(e => e.Symbol.ToLower() == symbol.ToLower()))
+            if (userPortfolio.Coins.Any(e => e.Symbol.ToLower() == name.ToLower()))
             {
                 return BadRequest("Coin already added");
             }
@@ -53,8 +53,8 @@ namespace api.Controllers
             {
                 CoinId = coin.Id,
                 AppUserId = appUser.Id,
-                NumOfCoins = NumOfCoins,
-                Balance = coin.Price * NumOfCoins
+                NumOfCoins = numOfCoins,
+                Balance = coin.Price * numOfCoins
             };
             await _portfolioRepo.CreatePortfolio(portfolioModel);
             if (portfolioModel == null)
@@ -71,7 +71,7 @@ namespace api.Controllers
 
             var userPortfolio = await _portfolioRepo.GetUserPortfolio(appUser);
 
-            var filterdedCoins = userPortfolio.Where(s => s.Symbol.ToLower() == symbol.ToLower()).ToList();
+            var filterdedCoins = userPortfolio.Coins.Where(s => s.Symbol.ToLower() == symbol.ToLower()).ToList();
 
             if (filterdedCoins.Count == 1)
             {

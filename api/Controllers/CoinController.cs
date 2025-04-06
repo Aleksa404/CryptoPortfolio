@@ -120,9 +120,21 @@ namespace api.Controllers
 
             return Ok($"{coinModel.CoinName} deleted");
         }
+        [HttpGet("symbol/{symbol}")]
+        public async Task<IActionResult> GetBySymbol([FromRoute] string symbol)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var coin = await _coinRepo.GetBySymbolAsync(symbol);
+            if (coin == null)
+            {
+                return NotFound();
+            }
+            return Ok(coin.ToCoinDTO());
 
 
-
+        }
 
 
 

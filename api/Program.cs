@@ -102,6 +102,9 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
+
+builder.Services.AddTransient<CoinSeeder>();
+
 builder.Services.AddHttpClient();
 builder.Services.AddMemoryCache();
 
@@ -110,7 +113,6 @@ builder.Services.AddScoped<ICommentRepository, CommentRepository>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IPortfolioRepository, PortfolioRepository>();
 
-builder.Services.AddSingleton<StreamChatService>();
 builder.Services.AddSingleton<CryptoPriceService>();
 
 var app = builder.Build();
@@ -131,6 +133,14 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+
+
+using (var scope = app.Services.CreateScope())
+{
+    var seeder = scope.ServiceProvider.GetRequiredService<CoinSeeder>();
+    await seeder.SeedCoinsAsync();
+}
 
 
 app.Run();

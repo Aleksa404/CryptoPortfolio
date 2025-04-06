@@ -9,12 +9,12 @@ namespace api.DTO.Coin
     public class CoinAndBalanceDto
     {
         public int Id { get; set; }
-        public string CoinName { get; set;}=string.Empty;
-        public string Symbol { get; set; } =string.Empty;
-        public decimal Price { get; set;}
-        public long MarketCap {get; set;}
-        public decimal Balance { get;set;}
-        public decimal NumOfCoins {get; set;}
+        public string CoinName { get; set; } = string.Empty;
+        public string Symbol { get; set; } = string.Empty;
+        public decimal Price { get; set; }
+        public decimal MarketCap { get; set; }
+        public decimal Balance { get; set; }
+        public decimal NumOfCoins { get; set; }
 
     }
 }
