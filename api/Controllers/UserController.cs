@@ -21,71 +21,71 @@ namespace api.Controllers
         public UserController(UserManager<AppUser> userManager, ITokenService tokenService, SignInManager<AppUser> signInManager)
         {
             _userManager = userManager;
-            _tokenService=tokenService;
-            _signinManager=signInManager;
+            _tokenService = tokenService;
+            _signinManager = signInManager;
         }
 
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterDTO registerDto)
         {
-            try 
+            try
             {
-                if(!ModelState.IsValid)
+                if (!ModelState.IsValid)
                     return BadRequest(ModelState);
 
                 var appUser = new AppUser
                 {
-                    UserName=registerDto.Username,
-                    Email=registerDto.Email,
+                    UserName = registerDto.Username,
+                    Email = registerDto.Email,
                 };
                 var createdUser = await _userManager.CreateAsync(appUser, registerDto.Password);
-                if(createdUser.Succeeded)
+                if (createdUser.Succeeded)
                 {
                     var roleResult = await _userManager.AddToRoleAsync(appUser, "User");
-                    if(roleResult.Succeeded)
+                    if (roleResult.Succeeded)
                     {
                         return Ok(
                             new NewUserDTO
                             {
-                                UserName=appUser.UserName,
-                                Email=appUser.Email,
-                                Token=_tokenService.CreateToken(appUser)
+                                UserName = appUser.UserName,
+                                Email = appUser.Email,
+                                Token = _tokenService.CreateToken(appUser)
                             }
                         );
                     }
-                    else 
+                    else
                         return StatusCode(500, roleResult.Errors);
-                } 
-                else 
+                }
+                else
                     return StatusCode(500, createdUser.Errors);
 
-            } 
-            catch(Exception e)
+            }
+            catch (Exception e)
             {
                 return StatusCode(500, e);
             }
-            
+
         }
 
         [HttpPost("login")]
         public async Task<IActionResult> Login(LoginDTO loginDto)
         {
-            if(!ModelState.IsValid)
+            if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var user = await _userManager.Users.FirstOrDefaultAsync(x=> x.UserName == loginDto.Username);
-            if(user == null)
+            var user = await _userManager.Users.FirstOrDefaultAsync(x => x.UserName == loginDto.Username);
+            if (user == null)
                 return Unauthorized("Invalid username");
-            
+
             var result = await _signinManager.CheckPasswordSignInAsync(user, loginDto.Password, false);
-            if(!result.Succeeded) return Unauthorized("Username/password Invalid");
+            if (!result.Succeeded) return Unauthorized("Username/password Invalid");
 
             return Ok(
                 new NewUserDTO
                 {
-                    UserName=user.UserName,
-                    Email=user.Email,
-                    Token=_tokenService.CreateToken(user)
+                    UserName = user.UserName,
+                    Email = user.Email,
+                    Token = _tokenService.CreateToken(user)
                 }
             );
         }

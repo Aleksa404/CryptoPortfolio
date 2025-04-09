@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios from "./axios";
 import type { AxiosError } from "axios";
 
 import { coinProfile, coinSearch } from "./Coins";
@@ -12,9 +12,7 @@ interface SearchResponse {
 
 export const searchCoin = async (query: string) => {
   try {
-    const data = await axios.get<SearchResponse>(
-      `http://localhost:5270/api/Coin?CoinName=${query}`
-    );
+    const data = await axios.get<SearchResponse>(`/Coin?CoinName=${query}`);
     return data;
   } catch (err) {
     const error = err as AxiosError;
@@ -24,9 +22,7 @@ export const searchCoin = async (query: string) => {
 
 export const getCoinProfile = async (query: string) => {
   try {
-    const data = await axios.get<coinProfile[]>(
-      `http://localhost:5270/api/Coin?CoinName=${query}`
-    );
+    const data = await axios.get<coinProfile[]>(`/Coin?CoinName=${query}`);
     return data;
   } catch (err) {
     const error = err as AxiosError;

@@ -56,6 +56,12 @@ builder.Services.AddCors(options =>
                   .AllowAnyMethod();
         });
 });
+// // Configure Kestrel server to listen on specific ports
+// builder.WebHost.ConfigureKestrel(options =>
+// {
+//     options.ListenAnyIP(5270); // HTTP
+//     options.ListenAnyIP(5001, listenOptions => listenOptions.UseHttps()); // HTTPS
+// });
 
 
 

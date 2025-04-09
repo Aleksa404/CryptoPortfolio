@@ -28,7 +28,9 @@ namespace api.Controllers
             _context = context;
         }
 
+
         [HttpGet("price/{coinId}")]
+        [Authorize]
         public async Task<IActionResult> GetPriceFromApi(string coinId)
         {
             try
@@ -46,6 +48,7 @@ namespace api.Controllers
             }
         }
         [HttpGet("all")]
+        [Authorize]
         public async Task<IActionResult> GetAllCoinsFromApi([FromQuery] int page = 1, [FromQuery] string search = "")
         {
             var coins = await _cryptoPriceService.GetAllCoins(page, search);

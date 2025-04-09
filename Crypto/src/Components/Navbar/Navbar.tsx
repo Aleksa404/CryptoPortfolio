@@ -1,14 +1,19 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../../Context/AuthContext";
 //import logo from "./logo.png";
-import "./Navbar.css";
-
-//import { useAuth } from "../../Context/useAuth";
 
 interface Props {}
 
 const Navbar = (props: Props) => {
-  // const { isLoggedIn, user, logout } = useAuth();
+  const { isLoggedIn, logout } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    navigate("/login");
+  };
+
   return (
     <nav className="relative container mx-auto p-2">
       <div className="flex items-center justify-between">
@@ -16,22 +21,35 @@ const Navbar = (props: Props) => {
           <Link to="/">
             <p>Home</p>
           </Link>
-          <div className=" font-bold lg:flex">
-            <Link to="/portfolio" className="text-black hover:text-darkBlue ">
-              My Portfolio
-            </Link>
-          </div>
+          {isLoggedIn && (
+            <div className=" font-bold lg:flex">
+              <Link to="/portfolio" className="text-black hover:text-darkBlue ">
+                My Portfolio
+              </Link>
+            </div>
+          )}
         </div>
-        <div className=" lg:flex items-center space-x-6 text-back justify-end">
-          <Link to="/login" className="hover:text-darkBlue">
-            Login
-          </Link>
-          <Link
-            to="/register"
-            className="px-8 py-3 font-bold rounded text-black bg-lightGreen hover:opacity-70"
-          >
-            Signup
-          </Link>
+        <div className="lg:flex items-center space-x-6 text-back justify-end">
+          {!isLoggedIn ? (
+            <div>
+              <Link to="/login" className="hover:text-darkBlue">
+                Login
+              </Link>
+              <Link
+                to="/register"
+                className="px-8 py-3 font-bold rounded text-black bg-lightGreen hover:opacity-70"
+              >
+                Signup
+              </Link>
+            </div>
+          ) : (
+            <button
+              onClick={handleLogout}
+              className="px-8 py-3 font-bold rounded text-black bg-lightGreen hover:opacity-70"
+            >
+              Logout
+            </button>
+          )}
         </div>
       </div>
     </nav>
