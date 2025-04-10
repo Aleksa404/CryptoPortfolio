@@ -14,11 +14,16 @@ namespace api.Repository
     public class PortfolioRepository : IPortfolioRepository
     {
         private readonly AppDbContext _context;
-        public PortfolioRepository(AppDbContext context)
+        private readonly ICoinService _coinService;
+        public PortfolioRepository(AppDbContext context, ICoinService coinService)
         {
-            _context = context;
-        }
 
+            {
+
+                _context = context;
+                _coinService = coinService;
+            }
+        }
         public async Task<Portfolio> CreatePortfolio(Portfolio portfolio)
         {
             await _context.Portfolios.AddAsync(portfolio);
@@ -26,27 +31,41 @@ namespace api.Repository
             return portfolio;
         }
 
-        public async Task<Portfolio> DeletePortfolio(AppUser appUser, string symbol)
+        public async Task<Portfolio> DeletePortfolio(AppUser appUser, string name, decimal amount)
         {
-            var portfolioModel = await _context.Portfolios.FirstOrDefaultAsync(x => x.AppUserId == appUser.Id && x.Coin.Symbol.ToLower() == symbol.ToLower());
+            var portfolioModel = await _context.Portfolios.FirstOrDefaultAsync(x => x.AppUserId == appUser.Id && x.Coin.CoinName.ToLower() == name.ToLower());
             if (portfolioModel == null)
                 return null;
 
-            _context.Portfolios.Remove(portfolioModel);
-            await _context.SaveChangesAsync();
-            return portfolioModel;
+
+            if (portfolioModel.NumOfCoins == amount)
+            {
+                _context.Portfolios.Remove(portfolioModel);
+                await _context.SaveChangesAsync();
+                return portfolioModel;
+            }
+            if (portfolioModel.NumOfCoins > amount)
+            {
+                portfolioModel.NumOfCoins -= amount;
+                // var currentPrice = await _coinService.GetCryptoPriceAsync(portfolioModel.Coin.CoinName);
+                // portfolioModel.Balance = portfolioModel.NumOfCoins * currentPrice;
+                await _context.SaveChangesAsync();
+                return portfolioModel;
+            }
+            return null;
         }
 
         public async Task<PortfolioDto> GetUserPortfolio(AppUser user)
         {
             decimal totalValue = 0;
+
             var coins = await _context.Portfolios.Where(u => u.AppUserId == user.Id)
             .Select(portf => new CoinAndBalanceDto
             {
                 Id = portf.CoinId,
                 Symbol = portf.Coin.Symbol,
                 CoinName = portf.Coin.CoinName,
-                Price = portf.Coin.Price,
+                Price = 0,
                 MarketCap = portf.Coin.MarketCap,
                 NumOfCoins = portf.NumOfCoins,
                 Balance = portf.Balance
@@ -63,6 +82,18 @@ namespace api.Repository
             };
 
 
+        }
+        public async Task<Portfolio> UpdatePortfolio(AppUser appUser, Coin coin, decimal numOfCoins)
+        {
+            var portfolioModel = await _context.Portfolios.FirstOrDefaultAsync(x => x.AppUserId == appUser.Id && x.CoinId == coin.Id);
+            if (portfolioModel == null)
+                return null;
+
+            //var currentPrice = await _coinService.GetCryptoPriceAsync(coin.CoinName);
+            portfolioModel.NumOfCoins += numOfCoins;
+            //portfolioModel.Balance = portfolioModel.NumOfCoins * currentPrice;
+            await _context.SaveChangesAsync();
+            return portfolioModel;
         }
 
 

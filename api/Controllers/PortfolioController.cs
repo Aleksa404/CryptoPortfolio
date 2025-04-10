@@ -19,11 +19,16 @@ namespace api.Controllers
         private readonly UserManager<AppUser> _userManager;
         private readonly ICoinRepository _coinRepo;
         private readonly IPortfolioRepository _portfolioRepo;
-        public PortfolioController(UserManager<AppUser> userManager, ICoinRepository coinRepo, IPortfolioRepository portfolioRepo)
+        private readonly ICoinService _coinService;
+        public PortfolioController(UserManager<AppUser> userManager, ICoinRepository coinRepo, IPortfolioRepository portfolioRepo, ICoinService coinService)
         {
-            _userManager = userManager;
-            _coinRepo = coinRepo;
-            _portfolioRepo = portfolioRepo;
+
+            {
+                _userManager = userManager;
+                _coinRepo = coinRepo;
+                _portfolioRepo = portfolioRepo;
+                _coinService = coinService;
+            }
         }
         [HttpGet]
         [Authorize]
@@ -45,16 +50,19 @@ namespace api.Controllers
             if (coin == null) return BadRequest("coin not found");
 
             var userPortfolio = await _portfolioRepo.GetUserPortfolio(appUser);
-            if (userPortfolio.Coins.Any(e => e.Symbol.ToLower() == name.ToLower()))
+            if (userPortfolio.Coins.Any(e => e.CoinName.ToLower() == name.ToLower()))
             {
-                return BadRequest("Coin already added");
+                await _portfolioRepo.UpdatePortfolio(appUser, coin, numOfCoins);
+
+                return Ok("Coin amount updated");
             }
+            var currentPrice = await _coinService.GetCryptoPriceAsync(name);
             var portfolioModel = new Portfolio
             {
                 CoinId = coin.Id,
                 AppUserId = appUser.Id,
                 NumOfCoins = numOfCoins,
-                Balance = coin.Price * numOfCoins
+                Balance = currentPrice * numOfCoins
             };
             await _portfolioRepo.CreatePortfolio(portfolioModel);
             if (portfolioModel == null)
@@ -64,18 +72,18 @@ namespace api.Controllers
         }
         [HttpDelete]
         [Authorize]
-        public async Task<IActionResult> DeletePortfolio(string symbol)
+        public async Task<IActionResult> DeletePortfolio(string name, decimal amount)
         {
             var username = User.GetUsernameFromClaim();
             var appUser = await _userManager.FindByNameAsync(username);
 
             var userPortfolio = await _portfolioRepo.GetUserPortfolio(appUser);
 
-            var filterdedCoins = userPortfolio.Coins.Where(s => s.Symbol.ToLower() == symbol.ToLower()).ToList();
+            var filterdedCoins = userPortfolio.Coins.Where(s => s.CoinName.ToLower() == name.ToLower()).ToList();
 
             if (filterdedCoins.Count == 1)
             {
-                await _portfolioRepo.DeletePortfolio(appUser, symbol);
+                await _portfolioRepo.DeletePortfolio(appUser, name, amount);
             }
             else
             {

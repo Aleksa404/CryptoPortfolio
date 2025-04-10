@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useAuth } from "../../Context/AuthContext";
+import { useAuth } from "../Context/AuthContext";
 //import logo from "./logo.png";
 
 interface Props {}
@@ -39,7 +39,7 @@ const Navbar = (props: Props) => {
                 to="/register"
                 className="px-8 py-3 font-bold rounded text-black bg-lightGreen hover:opacity-70"
               >
-                Signup
+                Register
               </Link>
             </div>
           ) : (

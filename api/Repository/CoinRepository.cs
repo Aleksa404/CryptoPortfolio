@@ -16,10 +16,10 @@ namespace api.Repository
     public class CoinRepository : ICoinRepository
     {
         private readonly AppDbContext _context;
-        private readonly CryptoPriceService _cryptoPriceService;
-        public CoinRepository(AppDbContext context, CryptoPriceService cryptoPriceService)
+        private readonly ICoinService _coinService;
+        public CoinRepository(AppDbContext context, ICoinService coinService)
         {
-            _cryptoPriceService = cryptoPriceService;
+            _coinService = coinService;
             _context = context;
         }
         public async Task<Coin> CreateAsync(Coin coinModel)
@@ -106,7 +106,7 @@ namespace api.Repository
 
         public async void PopulateDatabase()
         {
-            var coinList = await _cryptoPriceService.GetAllCoins(1, null);
+            var coinList = await _coinService.GetAllCoins(1, null);
             foreach (var coin in coinList)
             {
                 var existingCoin = await _context.Coins.FirstOrDefaultAsync(c => c.Symbol == coin.Symbol);

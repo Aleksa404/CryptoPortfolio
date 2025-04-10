@@ -118,8 +118,9 @@ builder.Services.AddScoped<ICoinRepository, CoinRepository>();
 builder.Services.AddScoped<ICommentRepository, CommentRepository>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IPortfolioRepository, PortfolioRepository>();
+builder.Services.AddScoped<ICoinService, CoinService>();
 
-builder.Services.AddSingleton<CryptoPriceService>();
+//builder.Services.AddSingleton<CryptoPriceService>();
 
 var app = builder.Build();
 

@@ -17,8 +17,7 @@ const router = createBrowserRouter([
     element: <App />,
     children: [
       { path: "", element: <HomePage /> },
-      { path: "search", element: <SearchPage /> },
-      { path: "coin/:ticker", element: <CoinPage /> },
+      { path: "coin/:id", element: <CoinPage /> },
       { path: "portfolio", element: <PortfolioPage /> },
       { path: "login", element: <LoginPage /> },
       { path: "register", element: <RegisterPage /> },

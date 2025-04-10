@@ -20,10 +20,10 @@ namespace api.Controllers
         private readonly AppDbContext _context;
         private readonly ICoinRepository _coinRepo;
 
-        private readonly CryptoPriceService _cryptoPriceService;
-        public CoinController(AppDbContext context, ICoinRepository coinRepo, CryptoPriceService cryptoPriceService)
+        private readonly ICoinService _coinService;
+        public CoinController(AppDbContext context, ICoinRepository coinRepo, ICoinService coinService)
         {
-            _cryptoPriceService = cryptoPriceService;
+            _coinService = coinService;
             _coinRepo = coinRepo;
             _context = context;
         }
@@ -35,7 +35,7 @@ namespace api.Controllers
         {
             try
             {
-                var price = await _cryptoPriceService.GetCryptoPriceAsync(coinId);
+                var price = await _coinService.GetCryptoPriceAsync(coinId);
                 if (price == -1)
                 {
                     return NotFound(new { Error = "Coin not found" });
@@ -47,11 +47,20 @@ namespace api.Controllers
                 return BadRequest(new { Error = ex.Message });
             }
         }
+        [HttpGet("coinProfile/{id}")]
+        public async Task<IActionResult> GetCoinById(string id)
+        {
+            var coin = await _coinService.GetCoinByIdAsync(id);
+            if (coin == null)
+                return NotFound(new { message = "Coin not found" });
+
+            return Ok(coin);
+        }
         [HttpGet("all")]
         [Authorize]
         public async Task<IActionResult> GetAllCoinsFromApi([FromQuery] int page = 1, [FromQuery] string search = "")
         {
-            var coins = await _cryptoPriceService.GetAllCoins(page, search);
+            var coins = await _coinService.GetAllCoins(page, search);
             return Ok(new { coins = coins, totalPages = 10 });
 
         }
