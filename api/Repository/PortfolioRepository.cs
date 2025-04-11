@@ -30,6 +30,16 @@ namespace api.Repository
             await _context.SaveChangesAsync();
             return portfolio;
         }
+        public async Task<Portfolio> DeletePortfolio(AppUser appUser, string name)
+        {
+            var portfolioModel = await _context.Portfolios.FirstOrDefaultAsync(x => x.AppUserId == appUser.Id && x.Coin.CoinName.ToLower() == name.ToLower());
+            if (portfolioModel == null)
+                return null;
+
+            _context.Portfolios.Remove(portfolioModel);
+            await _context.SaveChangesAsync();
+            return portfolioModel;
+        }
 
         public async Task<Portfolio> DeletePortfolio(AppUser appUser, string name, decimal amount)
         {
@@ -68,17 +78,30 @@ namespace api.Repository
                 Price = 0,
                 MarketCap = portf.Coin.MarketCap,
                 NumOfCoins = portf.NumOfCoins,
-                Balance = portf.Balance
+                Balance = 0
             }).ToListAsync();
+
+            var coinNames = coins.Select(c => c.CoinName).ToList();
+            var currentPrices = await _coinService.GetBatchPrices(coinNames);
+
             coins.ForEach(coin =>
             {
-                totalValue += coin.Balance;
+
+                var price = currentPrices.FirstOrDefault(p => p.Id.ToLower() == coin.CoinName.ToLower())?.Price;
+                if (price.HasValue)
+                {
+                    coin.Price = price.Value;
+                    totalValue += coin.NumOfCoins * price.Value;
+                    coin.Balance = coin.NumOfCoins * price.Value;
+                }
             });
+
 
             return new PortfolioDto
             {
                 Coins = coins,
-                TotalValue = totalValue
+                TotalValue = totalValue,
+
             };
 
 

@@ -8,7 +8,7 @@ interface CoinProfile {
   id: string;
   name: string;
   symbol: string;
-  current_price: number;
+  price: number;
   market_cap: number;
   total_volume: number;
   high_24h: number;
@@ -64,7 +64,7 @@ const CoinPage = () => {
             <div className="bg-gray-50 p-4 rounded-lg shadow">
               <p className="text-sm text-gray-500">Current Price</p>
               <p className="text-xl font-semibold text-blue-600">
-                ${coin.current_price}
+                ${coin.price}
               </p>
             </div>
             <div className="bg-gray-50 p-4 rounded-lg shadow">

@@ -9,11 +9,11 @@ namespace api.Models
     [Table("Portfolios")]
     public class Portfolio
     {
-        public string AppUserId { get; set;}
-        public int CoinId {get; set;} 
-        public AppUser AppUser {get; set;}
-        public Coin Coin {get; set;}
+        public string AppUserId { get; set; }
+        public int CoinId { get; set; }
+        public AppUser AppUser { get; set; }
+        public Coin Coin { get; set; }
         public decimal NumOfCoins { get; set; }
-        public decimal Balance { get; set;}
+
     }
 }

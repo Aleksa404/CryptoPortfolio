@@ -62,7 +62,7 @@ namespace api.Controllers
                 CoinId = coin.Id,
                 AppUserId = appUser.Id,
                 NumOfCoins = numOfCoins,
-                Balance = currentPrice * numOfCoins
+
             };
             await _portfolioRepo.CreatePortfolio(portfolioModel);
             if (portfolioModel == null)
@@ -70,9 +70,9 @@ namespace api.Controllers
             else
                 return Ok("Created");
         }
-        [HttpDelete]
+        [HttpDelete("DeleteAmountPortfolio")]
         [Authorize]
-        public async Task<IActionResult> DeletePortfolio(string name, decimal amount)
+        public async Task<IActionResult> DeleteAmountPortfolio(string name, decimal amount)
         {
             var username = User.GetUsernameFromClaim();
             var appUser = await _userManager.FindByNameAsync(username);
@@ -84,6 +84,27 @@ namespace api.Controllers
             if (filterdedCoins.Count == 1)
             {
                 await _portfolioRepo.DeletePortfolio(appUser, name, amount);
+            }
+            else
+            {
+                return BadRequest("Coin not found");
+            }
+            return Ok("Deleted");
+        }
+        [HttpDelete("DeleteCoin")]
+        [Authorize]
+        public async Task<IActionResult> DeleteCoin(string name)
+        {
+            var username = User.GetUsernameFromClaim();
+            var appUser = await _userManager.FindByNameAsync(username);
+
+            var userPortfolio = await _portfolioRepo.GetUserPortfolio(appUser);
+
+            var filterdedCoins = userPortfolio.Coins.Where(s => s.CoinName.ToLower() == name.ToLower()).ToList();
+
+            if (filterdedCoins.Count == 1)
+            {
+                await _portfolioRepo.DeletePortfolio(appUser, name);
             }
             else
             {

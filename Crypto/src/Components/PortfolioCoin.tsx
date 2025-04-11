@@ -13,9 +13,10 @@ interface PortfolioItem {
 }
 interface Props {
   coin: PortfolioItem;
+  onUpdate: (item: any) => void;
 }
 
-const PortfolioCoin = ({ coin }: Props) => {
+const PortfolioCoin = ({ coin, onUpdate }: Props) => {
   const [amount, setAmount] = useState<number>(0);
   const [isChanged, setIsChanged] = useState(false);
   const [ammountToShow, setAmountToShow] = useState<number>(0);
@@ -32,18 +33,30 @@ const PortfolioCoin = ({ coin }: Props) => {
       if (amount > coin.numOfCoins) {
         toast.error("Amount exceeds current holdings.");
         return;
-      } else if (amount <= 0) {
+      } else if (amount < 0) {
         toast.error("Invalid amount.");
         return;
       }
-      const res = await axios
-        .delete(`/portfolio?name=${coin.coinName}&amount=${amount}`)
-        .then((res) => {
-          console.log(res.data);
-          toast.success(`${amount} ${coin.coinName} removed from portfolio!`);
-          setAmountToShow(parseFloat(ammountToShow - amount).toFixed(5));
-          console.log(isChanged);
-        });
+      if (amount == 0) {
+        const res = await axios
+          .delete(`/portfolio/DeleteCoin?name=${coin.coinName}`)
+          .then((res) => {
+            console.log(res.data);
+            toast.success(`${coin.coinName} removed from portfolio!`);
+            onUpdate(coin);
+          });
+      } else {
+        const res = await axios
+          .delete(
+            `/portfolio/DeleteAmountPortfolio?name=${coin.coinName}&amount=${amount}`
+          )
+          .then((res) => {
+            console.log(res.data);
+            toast.success(`${amount} ${coin.coinName} removed from portfolio!`);
+            setAmountToShow(parseFloat((ammountToShow - amount).toFixed(5)));
+            console.log(isChanged);
+          });
+      }
     } catch (error) {
       console.error("Error removing coin:", error);
     }

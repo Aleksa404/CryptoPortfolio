@@ -13,6 +13,7 @@ namespace api.Interfaces
         Task<PortfolioDto> GetUserPortfolio(AppUser user);
         Task<Portfolio> CreatePortfolio(Portfolio portfolio);
         Task<Portfolio> DeletePortfolio(AppUser appUser, string symbol, decimal amount);
+        Task<Portfolio> DeletePortfolio(AppUser appUser, string name);
         Task<Portfolio> UpdatePortfolio(AppUser appUser, Coin coin, decimal numOfCoins);
     }
 }
