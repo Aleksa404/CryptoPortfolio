@@ -3,12 +3,13 @@ import { useParams } from "react-router";
 import Spinner from "../Components/Spinner";
 import axios from "../axios";
 import { formatLargeMonetaryNumber } from "../Services/NumberFormatService";
+import { CommentSection } from "./CommentSection";
 
 interface CoinProfile {
   id: string;
   name: string;
   symbol: string;
-  price: number;
+  current_price: number;
   market_cap: number;
   total_volume: number;
   high_24h: number;
@@ -64,7 +65,7 @@ const CoinPage = () => {
             <div className="bg-gray-50 p-4 rounded-lg shadow">
               <p className="text-sm text-gray-500">Current Price</p>
               <p className="text-xl font-semibold text-blue-600">
-                ${coin.price}
+                ${coin.current_price}
               </p>
             </div>
             <div className="bg-gray-50 p-4 rounded-lg shadow">
@@ -101,6 +102,7 @@ const CoinPage = () => {
             </div>
           </div>
         </div>
+        <CommentSection coinId={coin.id} />
       </div>
     </>
   );

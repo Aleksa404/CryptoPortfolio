@@ -22,14 +22,14 @@ namespace api.Controllers
 
         public CommentController(ICommentRepository commentrepo, ICoinRepository coinRepo, UserManager<AppUser> userManager)
         {
-            _commentRepo=commentrepo;
+            _commentRepo = commentrepo;
             _coinRepo = coinRepo;
             _userManager = userManager;
         }
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            if(!ModelState.IsValid)
+            if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
             var comments = await _commentRepo.GetAllAsync();
@@ -37,28 +37,29 @@ namespace api.Controllers
 
             return Ok(commentDto);
         }
-        [HttpGet]
-        [Route("{id:int}")]
-        public async Task<IActionResult> GetById([FromRoute] int id)
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetByCoinId([FromRoute] string id)
         {
-            if(!ModelState.IsValid)
+            Console.WriteLine(id);
+            if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var comment = await _commentRepo.GetByIdAsync(id);
-            if(comment == null)
+            Console.WriteLine(id);
+            var comments = await _commentRepo.GetByCoinIdAsync(id);
+            if (comments == null)
             {
                 return NotFound();
             }
-            return Ok(comment.ToCommentDto());
+            return Ok(comments);
         }
-        [HttpPost("{coinId:int}")]
-        public async Task<IActionResult> Create([FromRoute] int coinId, [FromBody] CreateCommentDTO commentDto)
+        [HttpPost("{name}")]
+        public async Task<IActionResult> Create([FromRoute] string name, [FromBody] CreateCommentDTO commentDto)
         {
 
-            if(!ModelState.IsValid)
+            if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            if(!await _coinRepo.CoinExists(coinId))
+            if (!await _coinRepo.CoinExists(name))
             {
                 return BadRequest("coin does not exist");
             }
@@ -66,21 +67,28 @@ namespace api.Controllers
             var username = User.GetUsernameFromClaim();
             var appUser = await _userManager.FindByNameAsync(username);
 
-            var commentModel = commentDto.ToCommentFromCreate(coinId);
+            var commentModel = commentDto.ToCommentFromCreate(name);
             commentModel.AppUserId = appUser.Id;
+            var coin = await _coinRepo.GetByNameAsync(name);
+            // if (coin == null)
+            // {
+            //     return NotFound("Coin not found");
+            // }
+            commentModel.CoinId = coin.Id;
+            //commentModel.CoinId = await _coinRepo.GetByNameAsync(name);
             await _commentRepo.CreateAsync(commentModel);
-     
-            return CreatedAtAction(nameof(GetById), new  {id = commentModel.Id}, commentModel.ToCommentDto());
+
+            return CreatedAtAction(nameof(GetByCoinId), new { id = commentModel.Id }, commentModel.ToCommentDto());
         }
         [HttpPut]
         [Route("{id:int}")]
         public async Task<IActionResult> Update([FromRoute] int id, [FromBody] UpdateCommentDTO updateDto)
         {
-            if(!ModelState.IsValid)
+            if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var comment = await _commentRepo.UpdateAsync(id,updateDto.ToCommentFromUpdate());
-            if(comment==null)
+            var comment = await _commentRepo.UpdateAsync(id, updateDto.ToCommentFromUpdate());
+            if (comment == null)
             {
                 return NotFound("Comment not found");
             }
@@ -90,11 +98,11 @@ namespace api.Controllers
         [Route("{id:int}")]
         public async Task<IActionResult> Delete([FromRoute] int id)
         {
-            if(!ModelState.IsValid)
+            if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
             var commentModel = await _commentRepo.DeleteAsync(id);
-            if(commentModel == null)
+            if (commentModel == null)
             {
                 return NotFound("Comment not found");
             }

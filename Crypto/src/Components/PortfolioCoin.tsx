@@ -13,10 +13,11 @@ interface PortfolioItem {
 }
 interface Props {
   coin: PortfolioItem;
+  onRemove: (item: any) => void;
   onUpdate: (item: any) => void;
 }
 
-const PortfolioCoin = ({ coin, onUpdate }: Props) => {
+const PortfolioCoin = ({ coin, onRemove, onUpdate }: Props) => {
   const [amount, setAmount] = useState<number>(0);
   const [isChanged, setIsChanged] = useState(false);
   const [ammountToShow, setAmountToShow] = useState<number>(0);
@@ -43,7 +44,7 @@ const PortfolioCoin = ({ coin, onUpdate }: Props) => {
           .then((res) => {
             console.log(res.data);
             toast.success(`${coin.coinName} removed from portfolio!`);
-            onUpdate(coin);
+            onRemove(coin);
           });
       } else {
         const res = await axios
@@ -54,6 +55,7 @@ const PortfolioCoin = ({ coin, onUpdate }: Props) => {
             console.log(res.data);
             toast.success(`${amount} ${coin.coinName} removed from portfolio!`);
             setAmountToShow(parseFloat((ammountToShow - amount).toFixed(5)));
+            onUpdate(coin);
             console.log(isChanged);
           });
       }

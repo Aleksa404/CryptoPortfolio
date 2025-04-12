@@ -24,7 +24,6 @@ const PortfolioPage = () => {
 
   useEffect(() => {
     axios.get<Result>("/portfolio").then((res) => {
-      console.log(res.data);
       setPortfolio(res.data.coins);
       setTotalValue(res.data.totalValue);
       setIsLoading(false);
@@ -36,11 +35,18 @@ const PortfolioPage = () => {
   const handleUpdateItem = (updatedItem: any) => {
     // Update the state in the parent when the child changes it
     setPortfolio((prevPortfolio) =>
-      prevPortfolio.filter((item) => item.id !== updatedItem.id)
+      prevPortfolio.map((item) =>
+        item.id === updatedItem.id ? updatedItem : item
+      )
     );
   };
 
-  const removeCoin = async (id: number, amount: number) => {};
+  const removeCoin = (updatedItem: any) => {
+    // Update the state in the parent when the child changes it
+    setPortfolio((prevPortfolio) =>
+      prevPortfolio.filter((item) => item.id !== updatedItem.id)
+    );
+  };
 
   return (
     <>
@@ -61,6 +67,7 @@ const PortfolioPage = () => {
                 <PortfolioCoin
                   key={item.id}
                   coin={item}
+                  onRemove={removeCoin}
                   onUpdate={handleUpdateItem}
                   //removeCoin={() => removeCoin(item.id, item.numOfCoins)}
                 />

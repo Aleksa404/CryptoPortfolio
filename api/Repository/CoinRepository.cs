@@ -80,9 +80,9 @@ namespace api.Repository
         }
 
 
-        public Task<bool> CoinExists(int id)
+        public Task<bool> CoinExists(string name)
         {
-            return _context.Coins.AnyAsync(s => s.Id == id);
+            return _context.Coins.AnyAsync(s => s.CoinName == name);
         }
         public async Task<Coin?> UpdateAsync(int id, UpdateCoinDTO coinDto)
         {

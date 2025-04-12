@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using api.Data;
+using api.DTO.Comment;
 using api.Interfaces;
+using api.Mappers;
 using api.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -21,10 +23,22 @@ namespace api.Repository
             return await _context.Comments.Include(a => a.AppUser).ToListAsync();
         }
 
-        public async Task<Comment?> GetByIdAsync(int id)
+        public async Task<List<CommentDTO?>> GetByCoinIdAsync(string id)
         {
-            var comment = await _context.Comments.Include(a => a.AppUser).FirstOrDefaultAsync(x=> x.Id == id);
-            return comment;
+            Console.WriteLine(id);
+            var coin = await _context.Coins.FirstOrDefaultAsync(x => x.CoinName.ToLower() == id.ToLower());
+            Console.WriteLine(coin.CoinName);
+            var comments = await _context.Comments.Include(a => a.AppUser).Where(x => x.CoinId == coin.Id).ToListAsync();
+            if (comments == null)
+            {
+                return null;
+            }
+            var commentDtos = new List<CommentDTO>();
+            foreach (var comment in comments)
+            {
+                commentDtos.Add(comment.ToCommentDto());
+            }
+            return commentDtos;
         }
         public async Task<Comment> CreateAsync(Comment commentModel)
         {
@@ -36,12 +50,12 @@ namespace api.Repository
         public async Task<Comment?> UpdateAsync(int id, Comment commentModel)
         {
             var existingComment = await _context.Comments.FindAsync(id);
-            if(existingComment == null)
+            if (existingComment == null)
             {
                 return null;
             }
-            existingComment.Title=commentModel.Title;
-            existingComment.Content=commentModel.Content;
+            existingComment.Title = commentModel.Title;
+            existingComment.Content = commentModel.Content;
             await _context.SaveChangesAsync();
 
             return existingComment;
@@ -50,8 +64,8 @@ namespace api.Repository
 
         public async Task<Comment?> DeleteAsync(int id)
         {
-            var comment = await _context.Comments.FirstOrDefaultAsync(x => x.Id==id);
-            if(comment == null)
+            var comment = await _context.Comments.FirstOrDefaultAsync(x => x.Id == id);
+            if (comment == null)
             {
                 return null;
             }
@@ -60,7 +74,7 @@ namespace api.Repository
             return comment;
 
         }
-    
-        
+
+
     }
 }

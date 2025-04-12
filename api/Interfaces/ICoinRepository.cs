@@ -17,6 +17,6 @@ namespace api.Interfaces
         Task<Coin> CreateAsync(Coin coinModel);
         Task<Coin?> UpdateAsync(int id, UpdateCoinDTO CoinDto);
         Task<Coin?> DeleteAsync(int id);
-        Task<bool> CoinExists(int id);
+        Task<bool> CoinExists(string name);
     }
 }
