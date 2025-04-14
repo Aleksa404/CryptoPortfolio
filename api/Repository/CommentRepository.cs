@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using api.Data;
 using api.DTO.Comment;
+using api.Helpers;
 using api.Interfaces;
 using api.Mappers;
 using api.Models;
@@ -23,22 +24,38 @@ namespace api.Repository
             return await _context.Comments.Include(a => a.AppUser).ToListAsync();
         }
 
-        public async Task<List<CommentDTO?>> GetByCoinIdAsync(string id)
+        public async Task<PaginatedResult<CommentDTO?>> GetByCoinIdAsync(string id, int page = 1, int pageSize = 10)
         {
-            Console.WriteLine(id);
+
             var coin = await _context.Coins.FirstOrDefaultAsync(x => x.CoinName.ToLower() == id.ToLower());
-            Console.WriteLine(coin.CoinName);
-            var comments = await _context.Comments.Include(a => a.AppUser).Where(x => x.CoinId == coin.Id).ToListAsync();
-            if (comments == null)
+            //  var comments = await _context.Comments.Include(a => a.AppUser).Where(x => x.CoinId == coin.Id).OrderByDescending(x => x.CreatedOn).Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
+            if (coin == null)
             {
                 return null;
             }
-            var commentDtos = new List<CommentDTO>();
-            foreach (var comment in comments)
+            var query = _context.Comments
+                .Include(a => a.AppUser)
+                .Where(x => x.CoinId == coin.Id);
+
+            var totalCount = await query.CountAsync();
+
+
+            var comments = await query
+                .OrderByDescending(x => x.CreatedOn)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+
+            var commentDtos = comments.Select(c => c.ToCommentDto()).ToList();
+
+            return new PaginatedResult<CommentDTO?>
             {
-                commentDtos.Add(comment.ToCommentDto());
-            }
-            return commentDtos;
+                Items = commentDtos,
+                TotalCount = await _context.Comments.CountAsync(x => x.CoinId == coin.Id),
+                Page = page,
+                PageSize = pageSize
+            };
         }
         public async Task<Comment> CreateAsync(Comment commentModel)
         {

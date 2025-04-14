@@ -1,7 +1,7 @@
 import axios from "./axios";
-import type { AxiosError } from "axios";
 
-import { coinProfile, coinSearch } from "./Coins";
+import { coinProfile, coinSearch } from "./Models/CoinModel";
+import { handleError } from "./Services/HandleErrorService";
 
 interface SearchResponse {
   data: coinSearch[];
@@ -15,8 +15,7 @@ export const searchCoin = async (query: string) => {
     const data = await axios.get<SearchResponse>(`/Coin?CoinName=${query}`);
     return data;
   } catch (err) {
-    const error = err as AxiosError;
-    return error.message;
+    handleError(err);
   }
 };
 
@@ -25,7 +24,6 @@ export const getCoinProfile = async (query: string) => {
     const data = await axios.get<coinProfile[]>(`/Coin?CoinName=${query}`);
     return data;
   } catch (err) {
-    const error = err as AxiosError;
-    return error.message;
+    handleError(err);
   }
 };

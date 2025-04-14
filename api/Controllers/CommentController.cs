@@ -38,14 +38,14 @@ namespace api.Controllers
             return Ok(commentDto);
         }
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetByCoinId([FromRoute] string id)
+        public async Task<IActionResult> GetByCoinId([FromRoute] string id, [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
         {
-            Console.WriteLine(id);
+
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            Console.WriteLine(id);
-            var comments = await _commentRepo.GetByCoinIdAsync(id);
+
+            var comments = await _commentRepo.GetByCoinIdAsync(id, page, pageSize);
             if (comments == null)
             {
                 return NotFound();

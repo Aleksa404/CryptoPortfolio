@@ -4,12 +4,12 @@ import "./index.css";
 import App from "./App.tsx";
 import { createBrowserRouter, Route, RouterProvider } from "react-router-dom";
 import HomePage from "./Pages/HomePage.tsx";
-import SearchPage from "./Pages/SearchPage.tsx";
 import CoinPage from "./Pages/CoinPage.tsx";
 import PortfolioPage from "./Pages/PortfolioPage.tsx";
 import LoginPage from "./Pages/LoginPage.tsx";
 import RegisterPage from "./Pages/RegisterPage.tsx";
 import { AuthProvider } from "./Context/AuthContext.tsx";
+import ProfilePage from "./Pages/ProfilePage.tsx";
 
 const router = createBrowserRouter([
   {
@@ -21,6 +21,7 @@ const router = createBrowserRouter([
       { path: "portfolio", element: <PortfolioPage /> },
       { path: "login", element: <LoginPage /> },
       { path: "register", element: <RegisterPage /> },
+      { path: "profile", element: <ProfilePage /> },
     ],
     errorElement: <div>404 Page not found</div>,
   },

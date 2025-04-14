@@ -4,6 +4,7 @@ import Spinner from "../Components/Spinner";
 import axios from "../axios";
 import { formatLargeMonetaryNumber } from "../Services/NumberFormatService";
 import { CommentSection } from "./CommentSection";
+import { handleError } from "@/Services/HandleErrorService";
 
 interface CoinProfile {
   id: string;
@@ -32,6 +33,7 @@ const CoinPage = () => {
         setCoin(res.data);
       } catch (err) {
         console.error("Failed to fetch coin data", err);
+        handleError(err);
       } finally {
         setIsLoading(false);
       }

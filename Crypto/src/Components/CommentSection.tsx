@@ -6,6 +6,11 @@ import axios from "../axios";
 interface Props {
   coinId: string;
 }
+interface response {
+  items: Comment[];
+  page: number;
+  totalPages: number;
+}
 
 interface Comment {
   id: string;
@@ -13,25 +18,28 @@ interface Comment {
   content: string;
   createdOn: string;
   createdBy: string;
-
-  // user: {
-  //   name: string;
-  //   avatarUrl: string;
-  // };
-  // text: string;
-  // createdAt: string;
 }
+
+// user: {
+//   name: string;
+//   avatarUrl: string;
+// };
+// text: string;
+// createdAt: string;
 
 export const CommentSection: React.FC<Props> = ({ coinId }) => {
   const [comments, setComments] = useState<Comment[]>([]);
   const [text, setText] = useState("");
   const [title, setTitle] = useState("");
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(10);
 
   useEffect(() => {
-    axios
-      .get<Comment[]>(`/comment/${coinId}`)
-      .then((res) => setComments(res.data));
-  }, [coinId]);
+    axios.get<response>(`/comment/${coinId}?page=${page}`).then((res) => {
+      setComments(res.data.items);
+      setTotalPages(res.data.totalPages);
+    });
+  }, [coinId, page]);
 
   const handleSubmit = async () => {
     if (!text.trim()) return;
@@ -43,15 +51,6 @@ export const CommentSection: React.FC<Props> = ({ coinId }) => {
       createdOn: new Date().toISOString(),
       createdBy: "You",
     };
-    // const newComment: Comment = {
-    //   id: uuid(),
-    //   user: {
-    //     name: "You",
-    //     avatarUrl: "https://i.pravatar.cc/40",
-    //   },
-    //   text,
-    //   createdAt: new Date().toISOString(),
-    // };
 
     await axios
       .post<Comment>(`/comment/${coinId}`, {
@@ -133,6 +132,25 @@ export const CommentSection: React.FC<Props> = ({ coinId }) => {
             </div>
           </div>
         ))}
+      </div>
+      <div className="mt-8 flex justify-center items-center gap-4">
+        <button
+          className="bg-blue-900 hover:bg-blue-800 text-white px-4 py-2 rounded disabled:opacity-50"
+          disabled={page <= 1}
+          onClick={() => setPage(page - 1)}
+        >
+          Prev
+        </button>
+        <span className="text-gray-700 font-medium">
+          Page {page} / {totalPages}
+        </span>
+        <button
+          className="bg-blue-900 hover:bg-blue-800 text-white px-4 py-2 rounded disabled:opacity-50"
+          disabled={page >= totalPages}
+          onClick={() => setPage(page + 1)}
+        >
+          Next
+        </button>
       </div>
     </div>
   );

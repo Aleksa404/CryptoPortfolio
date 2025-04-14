@@ -14,8 +14,10 @@ export default function LoginPage() {
   const handleSubmit = async (e?: React.FormEvent) => {
     e?.preventDefault();
     try {
-      await login(username, password);
-      loginContext();
+      const res = await login(username, password);
+      if (res) {
+        loginContext(res);
+      }
       toast.success("Login successful");
       navigate("/");
     } catch (err) {

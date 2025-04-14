@@ -86,8 +86,6 @@ namespace api.Service
 
                 if (!string.IsNullOrWhiteSpace(search))
                     url += $"&ids={search.ToLower()}";
-                // else
-                //     url = $"https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=20&page={page}";
 
                 var res = await _httpClient.GetStringAsync(url);
                 var coins = JsonConvert.DeserializeObject<List<CoinMarketDto>>(res);
@@ -97,17 +95,7 @@ namespace api.Service
                 return coins;
             }
 
-            // var url = "https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&per_page=2";
-            // var response = await _httpClient.GetStringAsync(url);
 
-            // if (response == null)
-            // {
-            //     return new List<CoinMarketDto>();
-            // }
-
-            // var coins = JsonConvert.DeserializeObject<List<CoinMarketDto>>(response);
-
-            // return coins;
 
             catch (Exception ex)
             {

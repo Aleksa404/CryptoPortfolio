@@ -43,12 +43,17 @@ const Navbar = (props: Props) => {
               </Link>
             </div>
           ) : (
-            <button
-              onClick={handleLogout}
-              className="px-8 py-3 font-bold rounded text-black bg-lightGreen hover:opacity-70"
-            >
-              Logout
-            </button>
+            <div>
+              <Link to="/profile" className="hover:text-darkBlue">
+                Profile
+              </Link>
+              <button
+                onClick={handleLogout}
+                className="px-8 py-3 font-bold rounded text-black bg-lightGreen hover:opacity-70"
+              >
+                Logout
+              </button>
+            </div>
           )}
         </div>
       </div>

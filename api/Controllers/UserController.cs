@@ -49,6 +49,7 @@ namespace api.Controllers
                             {
                                 UserName = appUser.UserName,
                                 Email = appUser.Email,
+                                Role = "User",
                                 Token = _tokenService.CreateToken(appUser)
                             }
                         );
@@ -85,6 +86,7 @@ namespace api.Controllers
                 {
                     UserName = user.UserName,
                     Email = user.Email,
+                    //  Role = user.Role,
                     Token = _tokenService.CreateToken(user)
                 }
             );

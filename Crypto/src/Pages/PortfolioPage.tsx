@@ -3,6 +3,7 @@ import axios from "../axios";
 import Spinner from "../Components/Spinner";
 import PortfolioCoin from "../Components/PortfolioCoin";
 import { formatLargeMonetaryNumber } from "../Services/NumberFormatService";
+import { useAuth } from "@/Context/AuthContext";
 interface Result {
   coins: PortfolioItem[];
   totalValue: number;
@@ -22,11 +23,14 @@ const PortfolioPage = () => {
   const [totalValue, setTotalValue] = useState<number>(0);
   const [isLoading, setIsLoading] = useState(true);
 
+  const { user } = useAuth();
+
   useEffect(() => {
     axios.get<Result>("/portfolio").then((res) => {
       setPortfolio(res.data.coins);
       setTotalValue(res.data.totalValue);
       setIsLoading(false);
+      console.log(user);
     });
 
     //console.log(portfolio);
