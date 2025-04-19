@@ -68,14 +68,15 @@ namespace api.Controllers
             var appUser = await _userManager.FindByNameAsync(username);
 
             var commentModel = commentDto.ToCommentFromCreate(name);
+            if (appUser == null)
+            {
+                return Unauthorized("User not found");
+            }
             commentModel.AppUserId = appUser.Id;
             var coin = await _coinRepo.GetByNameAsync(name);
-            // if (coin == null)
-            // {
-            //     return NotFound("Coin not found");
-            // }
+
             commentModel.CoinId = coin.Id;
-            //commentModel.CoinId = await _coinRepo.GetByNameAsync(name);
+
             await _commentRepo.CreateAsync(commentModel);
 
             return CreatedAtAction(nameof(GetByCoinId), new { id = commentModel.Id }, commentModel.ToCommentDto());

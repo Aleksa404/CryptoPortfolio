@@ -28,7 +28,7 @@ namespace api.Controllers
             _context = context;
         }
 
-
+        //testing endpoint
         [HttpGet("price/{coinId}")]
         [Authorize]
         public async Task<IActionResult> GetPriceFromApi(string coinId)

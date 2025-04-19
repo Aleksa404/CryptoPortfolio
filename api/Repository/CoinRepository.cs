@@ -57,10 +57,7 @@ namespace api.Repository
                 {
                     coins = query.IsDecsending ? coins.OrderByDescending(s => s.Symbol) : coins.OrderBy(s => s.Symbol);
                 }
-                if (query.SortBy.Equals("Price", StringComparison.OrdinalIgnoreCase))
-                {
-                    coins = query.IsDecsending ? coins.OrderByDescending(p => p.Price) : coins.OrderBy(s => s.Price);
-                }
+
             }
             var skipNumber = (query.PageNumber - 1) * query.PageSize;
             return await coins.Skip(skipNumber).Take(query.PageSize).ToListAsync();
@@ -70,11 +67,11 @@ namespace api.Repository
             return await _context.Coins.Include(c => c.Comments).FirstOrDefaultAsync(i => i.Id == id);
         }
 
-        public async Task<Coin> GetBySymbolAsync(string symbol)
+        public async Task<Coin?> GetBySymbolAsync(string symbol)
         {
             return await _context.Coins.FirstOrDefaultAsync(s => s.Symbol.ToLower() == symbol.ToLower());
         }
-        public async Task<Coin> GetByNameAsync(string name)
+        public async Task<Coin?> GetByNameAsync(string name)
         {
             return await _context.Coins.FirstOrDefaultAsync(s => s.CoinName.ToLower() == name.ToLower());
         }
@@ -95,8 +92,7 @@ namespace api.Repository
 
             existingCoin.Symbol = coinDto.Symbol;
             existingCoin.CoinName = coinDto.CoinName;
-            existingCoin.Price = coinDto.Price;
-            existingCoin.MarketCap = coinDto.MarketCap;
+
 
 
             await _context.SaveChangesAsync();
@@ -116,8 +112,7 @@ namespace api.Repository
                     {
                         Symbol = coin.Symbol,
                         CoinName = coin.Name,
-                        Price = coin.Current_price,
-                        MarketCap = coin.Market_cap
+
                     };
                     await _context.Coins.AddAsync(newCoin);
                     await _context.SaveChangesAsync();

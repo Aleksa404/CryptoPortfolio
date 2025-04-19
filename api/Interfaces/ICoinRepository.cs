@@ -12,8 +12,8 @@ namespace api.Interfaces
     {
         Task<List<Coin>> GetAllAsync(QueryObject query);
         Task<Coin?> GetByIdAsync(int id);
-        Task<Coin> GetBySymbolAsync(string symbol);
-        Task<Coin> GetByNameAsync(string name);
+        Task<Coin?> GetBySymbolAsync(string symbol);
+        Task<Coin?> GetByNameAsync(string name);
         Task<Coin> CreateAsync(Coin coinModel);
         Task<Coin?> UpdateAsync(int id, UpdateCoinDTO CoinDto);
         Task<Coin?> DeleteAsync(int id);

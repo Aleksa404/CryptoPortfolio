@@ -4,19 +4,9 @@ import Spinner from "../Components/Spinner";
 import PortfolioCoin from "../Components/PortfolioCoin";
 import { formatLargeMonetaryNumber } from "../Services/NumberFormatService";
 import { useAuth } from "@/Context/AuthContext";
-interface Result {
-  coins: PortfolioItem[];
-  totalValue: number;
-}
-interface PortfolioItem {
-  id: number;
-  coinName: string;
-  symbol: string;
-  numOfCoins: number;
-  price: number;
-  balance: number;
-  marketCap: number;
-}
+import { PortfolioItem, PortfolioPageResult } from "@/Models/CoinModel";
+import { getPortfolio } from "@/api";
+import { handleError } from "@/Services/HandleErrorService";
 
 const PortfolioPage = () => {
   const [portfolio, setPortfolio] = useState<PortfolioItem[]>([]);
@@ -26,14 +16,20 @@ const PortfolioPage = () => {
   const { user } = useAuth();
 
   useEffect(() => {
-    axios.get<Result>("/portfolio").then((res) => {
-      setPortfolio(res.data.coins);
-      setTotalValue(res.data.totalValue);
-      setIsLoading(false);
-      console.log(user);
-    });
+    const getPort = async () => {
+      try {
+        const res = await getPortfolio();
+        setPortfolio(res.coins);
+        setTotalValue(res.totalValue);
+        setIsLoading(false);
+      } catch (err) {
+        handleError(err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
 
-    //console.log(portfolio);
+    getPort();
   }, []);
 
   const handleUpdateItem = (updatedItem: any) => {
@@ -46,7 +42,6 @@ const PortfolioPage = () => {
   };
 
   const removeCoin = (updatedItem: any) => {
-    // Update the state in the parent when the child changes it
     setPortfolio((prevPortfolio) =>
       prevPortfolio.filter((item) => item.id !== updatedItem.id)
     );
@@ -73,7 +68,6 @@ const PortfolioPage = () => {
                   coin={item}
                   onRemove={removeCoin}
                   onUpdate={handleUpdateItem}
-                  //removeCoin={() => removeCoin(item.id, item.numOfCoins)}
                 />
               ))}
             </div>

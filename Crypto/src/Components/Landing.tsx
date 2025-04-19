@@ -4,19 +4,9 @@ import { Link, useNavigate } from "react-router-dom";
 import Spinner from "./Spinner";
 import { formatLargeMonetaryNumber } from "../Services/NumberFormatService";
 import toast from "react-hot-toast";
-
-interface Coin {
-  id: string;
-  name: string;
-  symbol: string;
-  current_price: number;
-  market_cap: number;
-}
-
-interface CoinResponse {
-  coins: Coin[];
-  totalPages: number;
-}
+import { Coin, CoinResponse } from "@/Models/CoinModel";
+import { get } from "axios";
+import { getAllCoins } from "@/api";
 
 const Landing = () => {
   const [coins, setCoins] = useState<Coin[]>([]);
@@ -34,12 +24,10 @@ const Landing = () => {
     setIsLoading(true);
     const delayDebounce = setTimeout(() => {
       const fetchCoins = async () => {
-        const res = await axios.get<CoinResponse>(
-          `/Coin/all?page=${page}&search=${search}`
-        );
+        const res = await getAllCoins(page, search);
         console.log(search);
-        setCoins(res.data.coins);
-        setTotalPages(res.data.totalPages);
+        setCoins(res.coins);
+        setTotalPages(res.totalPages);
         setIsLoading(false);
       };
       fetchCoins();

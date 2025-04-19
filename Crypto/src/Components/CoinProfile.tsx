@@ -2,35 +2,23 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router";
 import Spinner from "../Components/Spinner";
 import axios from "../axios";
+import { CoinProfileFull } from "../Models/CoinModel";
 import { formatLargeMonetaryNumber } from "../Services/NumberFormatService";
 import { CommentSection } from "./CommentSection";
 import { handleError } from "@/Services/HandleErrorService";
-
-interface CoinProfile {
-  id: string;
-  name: string;
-  symbol: string;
-  current_price: number;
-  market_cap: number;
-  total_volume: number;
-  high_24h: number;
-  low_24h: number;
-  price_change_percentage_24h: number;
-  image_url: string;
-  description: string;
-}
+import { getCoinProfile } from "@/api";
 
 const CoinPage = () => {
   //
   const { id } = useParams();
-  const [coin, setCoin] = useState<CoinProfile | null>(null);
+  const [coin, setCoin] = useState<CoinProfileFull | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const getCoin = async () => {
       try {
-        const res = await axios.get<CoinProfile>(`Coin/coinProfile/${id}`);
-        setCoin(res.data);
+        const res = await getCoinProfile(id as string);
+        setCoin(res);
       } catch (err) {
         console.error("Failed to fetch coin data", err);
         handleError(err);
@@ -39,7 +27,7 @@ const CoinPage = () => {
       }
     };
     getCoin();
-  }, []);
+  }, [id]);
 
   if (isLoading) return <Spinner />;
   if (!coin)

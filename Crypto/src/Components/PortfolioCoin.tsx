@@ -1,16 +1,9 @@
 import React, { use, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import axios from "../axios";
+import { PortfolioItem } from "@/Models/CoinModel";
+import { deleteAmount, deleteCoin } from "@/api";
 
-interface PortfolioItem {
-  id: number;
-  coinName: string;
-  symbol: string;
-  numOfCoins: number;
-  price: number;
-  balance: number;
-  marketCap: number;
-}
 interface Props {
   coin: PortfolioItem;
   onRemove: (item: any) => void;
@@ -39,25 +32,17 @@ const PortfolioCoin = ({ coin, onRemove, onUpdate }: Props) => {
         return;
       }
       if (amount == 0) {
-        const res = await axios
-          .delete(`/portfolio/DeleteCoin?name=${coin.coinName}`)
-          .then((res) => {
-            console.log(res.data);
-            toast.success(`${coin.coinName} removed from portfolio!`);
-            onRemove(coin);
-          });
+        const res = await deleteCoin(coin);
+        toast.success(`${coin.coinName} removed from portfolio!`);
+        onRemove(coin);
       } else {
-        const res = await axios
-          .delete(
-            `/portfolio/DeleteAmountPortfolio?name=${coin.coinName}&amount=${amount}`
-          )
-          .then((res) => {
-            console.log(res.data);
-            toast.success(`${amount} ${coin.coinName} removed from portfolio!`);
-            setAmountToShow(parseFloat((ammountToShow - amount).toFixed(5)));
-            onUpdate(coin);
-            console.log(isChanged);
-          });
+        const res = await deleteAmount(coin, amount);
+
+        console.log(res);
+        toast.success(`${amount} ${coin.coinName} removed from portfolio!`);
+        setAmountToShow(parseFloat((ammountToShow - amount).toFixed(5)));
+        onUpdate(coin);
+        console.log(isChanged);
       }
     } catch (error) {
       console.error("Error removing coin:", error);

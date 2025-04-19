@@ -2,22 +2,12 @@ import { useState, useEffect } from "react";
 import { v4 as uuid } from "uuid";
 import { formatDistanceToNow } from "date-fns";
 import axios from "../axios";
+import { getComments, postComment } from "@/api";
+import { Comment } from "@/Models/CommentModel";
+import { get } from "axios";
 
 interface Props {
   coinId: string;
-}
-interface response {
-  items: Comment[];
-  page: number;
-  totalPages: number;
-}
-
-interface Comment {
-  id: string;
-  title: string;
-  content: string;
-  createdOn: string;
-  createdBy: string;
 }
 
 // user: {
@@ -35,10 +25,12 @@ export const CommentSection: React.FC<Props> = ({ coinId }) => {
   const [totalPages, setTotalPages] = useState(10);
 
   useEffect(() => {
-    axios.get<response>(`/comment/${coinId}?page=${page}`).then((res) => {
-      setComments(res.data.items);
-      setTotalPages(res.data.totalPages);
-    });
+    const getComs = async () => {
+      const res = await getComments(coinId, page);
+      setComments(res.items);
+      setTotalPages(res.totalPages);
+    };
+    getComs();
   }, [coinId, page]);
 
   const handleSubmit = async () => {
@@ -52,15 +44,10 @@ export const CommentSection: React.FC<Props> = ({ coinId }) => {
       createdBy: "You",
     };
 
-    await axios
-      .post<Comment>(`/comment/${coinId}`, {
-        ...newComment,
-      })
-      .then((res) => {
-        setComments((prev) => [res.data, ...prev]);
-        setTitle("");
-        setText("");
-      });
+    const res = await postComment(coinId, newComment);
+    setComments((prev) => [res, ...prev]);
+    setTitle("");
+    setText("");
   };
 
   return (

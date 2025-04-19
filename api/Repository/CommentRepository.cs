@@ -24,11 +24,10 @@ namespace api.Repository
             return await _context.Comments.Include(a => a.AppUser).ToListAsync();
         }
 
-        public async Task<PaginatedResult<CommentDTO?>> GetByCoinIdAsync(string id, int page = 1, int pageSize = 10)
+        public async Task<PaginatedResult<CommentDTO?>?> GetByCoinIdAsync(string id, int page = 1, int pageSize = 10)
         {
 
             var coin = await _context.Coins.FirstOrDefaultAsync(x => x.CoinName.ToLower() == id.ToLower());
-            //  var comments = await _context.Comments.Include(a => a.AppUser).Where(x => x.CoinId == coin.Id).OrderByDescending(x => x.CreatedOn).Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
             if (coin == null)
             {
                 return null;
@@ -51,7 +50,7 @@ namespace api.Repository
 
             return new PaginatedResult<CommentDTO?>
             {
-                Items = commentDtos,
+                Items = [.. commentDtos],
                 TotalCount = await _context.Comments.CountAsync(x => x.CoinId == coin.Id),
                 Page = page,
                 PageSize = pageSize

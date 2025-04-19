@@ -2,11 +2,6 @@ import axios from "../axios";
 import { UserProfile } from "../Models/UserModel";
 import { handleError } from "./HandleErrorService";
 
-interface LoginResponse {
-  token: string;
-  user: UserProfile;
-}
-
 export async function login(username: string, password: string) {
   try {
     const res = await axios.post<UserProfile>("/account/login", {

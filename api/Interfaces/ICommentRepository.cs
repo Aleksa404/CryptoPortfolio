@@ -11,7 +11,7 @@ namespace api.Interfaces
     public interface ICommentRepository
     {
         Task<List<Comment>> GetAllAsync();
-        Task<PaginatedResult<CommentDTO?>> GetByCoinIdAsync(string id, int page = 1, int pageSize = 10);
+        Task<PaginatedResult<CommentDTO?>?> GetByCoinIdAsync(string id, int page = 1, int pageSize = 10);
         Task<Comment> CreateAsync(Comment commentModel);
         Task<Comment?> UpdateAsync(int id, Comment commentModel);
         Task<Comment?> DeleteAsync(int id);

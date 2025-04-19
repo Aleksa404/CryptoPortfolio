@@ -13,23 +13,21 @@ namespace api.Mappers
         {
             return new CoinDTO
             {
-                Id=CoinModel.Id,
-                CoinName=CoinModel.CoinName,
-                Symbol=CoinModel.Symbol,
-                Price=CoinModel.Price,
+                Id = CoinModel.Id,
+                CoinName = CoinModel.CoinName,
+                Symbol = CoinModel.Symbol,
 
-                MarketCap=CoinModel.MarketCap,
-                Comments= CoinModel.Comments.Select(c => c.ToCommentDto()).ToList()
+                Comments = CoinModel.Comments.Select(c => c.ToCommentDto()).ToList()
             };
         }
-        public static Coin ToCoinFromCreateDto(this CreateCoinDTO coinDto )
+        public static Coin ToCoinFromCreateDto(this CreateCoinDTO coinDto)
         {
-            return new Coin{
-                Symbol= coinDto.Symbol,
-                CoinName=coinDto.CoinName,
-                Price=coinDto.Price,
-                MarketCap=coinDto.MarketCap
-                
+            return new Coin
+            {
+                Symbol = coinDto.Symbol,
+                CoinName = coinDto.CoinName,
+
+
             };
         }
     }
