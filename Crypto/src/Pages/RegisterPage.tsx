@@ -24,7 +24,14 @@ export default function RegisterPage() {
       }, 5000);
       window.location.href = "/login";
     } catch (err) {
-      toast.error("Registration failed");
+      if (Array.isArray(err)) {
+        // Multiple errors from backend
+        err.forEach((e) => toast.error(e.description || e));
+      } else if (typeof err === "string") {
+        toast.error(err);
+      } else {
+        toast.error("Registration failed");
+      }
     }
   };
 

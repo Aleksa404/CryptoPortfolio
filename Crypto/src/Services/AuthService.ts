@@ -10,8 +10,10 @@ export async function login(username: string, password: string) {
     });
     localStorage.setItem("token", res.data.token);
     return res.data;
-  } catch (e) {
-    handleError(e);
+  } catch (error: any) {
+    if (error.response) {
+      throw error.response.data;
+    }
   }
 }
 
@@ -32,7 +34,9 @@ export async function register(
       password,
     });
     return res.data;
-  } catch (e) {
-    handleError(e);
+  } catch (error: any) {
+    if (error.response) {
+      throw error.response.data;
+    }
   }
 }
