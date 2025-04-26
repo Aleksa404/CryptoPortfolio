@@ -58,7 +58,7 @@ namespace api.Controllers
                         return StatusCode(500, roleResult.Errors);
                 }
                 else
-                    return StatusCode(500, createdUser.Errors);
+                    return BadRequest(createdUser.Errors);
 
             }
             catch (Exception e)
