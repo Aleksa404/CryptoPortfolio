@@ -1,3 +1,5 @@
+using Amazon.Extensions.NETCore.Setup;
+using Amazon.SimpleEmail;
 using api.Data;
 using api.Interfaces;
 using api.Models;
@@ -103,11 +105,17 @@ builder.Services.AddAuthentication(options =>
         ValidAudience = builder.Configuration["JWT:Audience"],
         ValidateIssuerSigningKey = true,
         IssuerSigningKey = new SymmetricSecurityKey(
-            System.Text.Encoding.UTF8.GetBytes(builder.Configuration["JWT:SigninKey"])
+            System.Text.Encoding.UTF8.GetBytes(builder.Configuration["JWT:SigninKey"] ?? string.Empty)
         )
     };
 });
+builder.Services.AddDefaultAWSOptions(new AWSOptions
+{
+    Region = Amazon.RegionEndpoint.USEast1
+});
+builder.Services.AddAWSService<IAmazonSimpleEmailService>();
 
+builder.Services.AddTransient<EmailSenderService>();
 
 builder.Services.AddTransient<CoinSeeder>();
 
@@ -118,7 +126,10 @@ builder.Services.AddScoped<ICoinRepository, CoinRepository>();
 builder.Services.AddScoped<ICommentRepository, CommentRepository>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IPortfolioRepository, PortfolioRepository>();
+builder.Services.AddScoped<IAlertRepository, AlertRepository>();
 builder.Services.AddScoped<ICoinService, CoinService>();
+
+builder.Services.AddHostedService<AlertCheckerService>();
 
 //builder.Services.AddSingleton<CryptoPriceService>();
 
@@ -148,6 +159,12 @@ using (var scope = app.Services.CreateScope())
     var seeder = scope.ServiceProvider.GetRequiredService<CoinSeeder>();
     await seeder.SeedCoinsAsync();
 }
+// app.MapGet("/send-test-email", async (EmailSenderService sender) =>
+// {
+
+//     await sender.SendEmailAsync();
+//     return Results.Ok("Email sent!");
+// });
 
 
 app.Run();

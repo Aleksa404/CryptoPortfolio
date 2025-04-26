@@ -17,7 +17,7 @@ namespace api.Controllers
     [ApiController]
     public class CoinController : ControllerBase
     {
-        private readonly AppDbContext _context;
+
         private readonly ICoinRepository _coinRepo;
 
         private readonly ICoinService _coinService;
@@ -25,7 +25,7 @@ namespace api.Controllers
         {
             _coinService = coinService;
             _coinRepo = coinRepo;
-            _context = context;
+
         }
 
         //testing endpoint

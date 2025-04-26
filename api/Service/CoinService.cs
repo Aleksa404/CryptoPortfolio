@@ -16,7 +16,7 @@ namespace api.Service
         {
             _httpClient = httpClient;
             _memoryCache = memoryCache;
-            _apiKey = configuration["CoinGecko:ApiKey"];
+            _apiKey = configuration["CoinGecko:ApiKey"] ?? throw new ArgumentNullException("CoinGecko API key is not configured.");
             _httpClient.DefaultRequestHeaders.Add("x-cg-demo-api-key", _apiKey);
         }
         public async Task<List<CoinPriceDto>> GetBatchPrices(List<string> coinIds)
@@ -45,7 +45,7 @@ namespace api.Service
             }
             try
             {
-                // _httpClient.DefaultRequestHeaders.Add("x-cg-pro-api-key", _apiKey);
+
                 var response = await _httpClient.GetStringAsync($"https://api.coingecko.com/api/v3/simple/price?ids={cryptoName}&vs_currencies=usd");
                 var priceData = JsonConvert.DeserializeObject<Dictionary<string, Dictionary<string, decimal>>>(response);
                 if (priceData is null || !priceData.ContainsKey(cryptoName) || !priceData[cryptoName].ContainsKey("usd"))
@@ -64,9 +64,6 @@ namespace api.Service
             }
 
 
-            // return priceData != null && priceData.ContainsKey(cryptoSymbol) && priceData[cryptoSymbol].ContainsKey("usd")
-            //     ? priceData[cryptoSymbol]["usd"]
-            //     : 0;
         }
 
 
@@ -117,7 +114,12 @@ namespace api.Service
             }
 
             var json = await response.Content.ReadAsStringAsync();
-            dynamic coinData = Newtonsoft.Json.JsonConvert.DeserializeObject(json);
+            dynamic coinData = JsonConvert.DeserializeObject(json);
+
+            if (coinData == null)
+            {
+                return null;
+            }
 
             return new CoinProfileDto
             {
