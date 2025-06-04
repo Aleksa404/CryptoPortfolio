@@ -33,7 +33,7 @@ ASP.NET Core Web API – For building RESTful endpoints that handle:
 
 - Model Binding & Validation – Strongly-typed models with validation to enforce data integrity.
 
-- AWS SES(Simgle email Service) - Sending price alert emails.
+- AWS SES(Simple email Service) - Sending price alert emails.
 
 🔜 Frontend – React + TypeScript
 
@@ -48,7 +48,7 @@ ASP.NET Core Web API – For building RESTful endpoints that handle:
 - React Hooks – To manage component state and lifecycle events.
 
 🗃️ Database
-SQL Server – Used to persist:
+PostgreSQL – Used to persist:
 
 - User profiles
 
