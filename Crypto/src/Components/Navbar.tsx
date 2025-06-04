@@ -1,10 +1,7 @@
-import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../Context/AuthContext";
 
-interface Props {}
-
-const Navbar = (props: Props) => {
+const Navbar = () => {
   const { isLoggedIn, logout } = useAuth();
   const navigate = useNavigate();
 

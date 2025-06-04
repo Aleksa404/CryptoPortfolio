@@ -1,9 +1,11 @@
+import type { AxiosResponse } from "axios";
 import axios from "./axios";
 import {
   CoinProfileFull,
   CoinResponse,
   PortfolioItem,
   PortfolioPageResult,
+  PriceAlert,
 } from "./Models/CoinModel";
 import { PagginatedComments, Comment } from "./Models/CommentModel";
 
@@ -22,6 +24,13 @@ export async function getAllCoins(page: number, search: string) {
 export async function getCoinProfile(id: string) {
   const res = await axios.get<CoinProfileFull>(`Coin/coinProfile/${id}`);
   return res.data;
+}
+export async function setPriceAlert(priceAlert: PriceAlert) {
+  const res = await axios.post<AxiosResponse<PriceAlert>>(
+    "/alerts",
+    priceAlert
+  );
+  return res;
 }
 
 export async function deleteCoin(coin: PortfolioItem) {

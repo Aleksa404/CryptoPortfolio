@@ -1,10 +1,9 @@
 import { useState, useEffect } from "react";
 import { v4 as uuid } from "uuid";
 import { formatDistanceToNow } from "date-fns";
-import axios from "../axios";
+
 import { getComments, postComment } from "@/api";
 import { Comment } from "@/Models/CommentModel";
-import { get } from "axios";
 
 interface Props {
   coinId: string;

@@ -19,9 +19,13 @@ namespace api.Repository
         }
         public async Task<bool> CreateAlert(AlertDto alertDto)
         {
+            var userId = _context.Users.Where(u => u.Email == alertDto.Email)
+                .Select(u => u.Id)
+                .FirstOrDefault();
+            if (userId == null) return false;
             var alert = new PriceAlert
             {
-                UserId = alertDto.UserId,
+                UserId = userId,
                 CoinId = alertDto.CoinId,
                 TargetPrice = alertDto.TargetPrice,
                 Email = alertDto.Email,

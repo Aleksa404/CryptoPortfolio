@@ -1,5 +1,4 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import { useNavigate } from "react-router";
 import { UserProfile } from "../Models/UserModel";
 
 interface AuthContextType {
@@ -13,12 +12,12 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+  // const [isLoading, setIsLoading] = useState<boolean>(true);
   const [user, setUser] = useState<UserProfile>();
 
   useEffect(() => {
     setIsLoggedIn(!!localStorage.getItem("token"));
-    setIsLoading(false);
+    //setIsLoading(false);
   }, []);
 
   const login = (user: UserProfile) => {

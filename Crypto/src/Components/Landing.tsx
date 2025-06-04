@@ -1,11 +1,11 @@
-import React, { use, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "../axios";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import Spinner from "./Spinner";
 import { formatLargeMonetaryNumber } from "../Services/NumberFormatService";
 import toast from "react-hot-toast";
-import { Coin, CoinResponse } from "@/Models/CoinModel";
-import { get } from "axios";
+import { Coin } from "@/Models/CoinModel";
+
 import { getAllCoins } from "@/api";
 
 const Landing = () => {
@@ -14,7 +14,6 @@ const Landing = () => {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [isLoading, setIsLoading] = useState(true);
-  const navigate = useNavigate();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedCoin, setSelectedCoin] = useState<Coin | null>(null);

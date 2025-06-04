@@ -1,0 +1,31 @@
+services:
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: cryptodb
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  backend:
+    image: aleksa404/crypto-backend:1.0
+    environment:
+      ASPNETCORE_ENVIRONMENT: "Production"
+      ConnectionStrings__Default: "Host=postgres;Database=cryptodb;Username=postgres;Password=admin"
+    ports:
+      - "5000:80"
+    depends_on:
+      - postgres
+
+  frontend:
+    image: aleksa404/crypto-frontend:1.0
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+
+volumes:
+  pgdata:

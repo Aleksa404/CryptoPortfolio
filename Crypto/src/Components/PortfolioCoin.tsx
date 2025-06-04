@@ -1,6 +1,6 @@
-import React, { use, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import axios from "../axios";
+
 import { PortfolioItem } from "@/Models/CoinModel";
 import { deleteAmount, deleteCoin } from "@/api";
 
@@ -32,7 +32,7 @@ const PortfolioCoin = ({ coin, onRemove, onUpdate }: Props) => {
         return;
       }
       if (amount == 0) {
-        const res = await deleteCoin(coin);
+        await deleteCoin(coin);
         toast.success(`${coin.coinName} removed from portfolio!`);
         onRemove(coin);
       } else {

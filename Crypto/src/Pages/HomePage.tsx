@@ -1,4 +1,3 @@
-import React from "react";
 import Landing from "../Components/Landing";
 import { useAuth } from "../Context/AuthContext";
 import LoginPage from "./LoginPage";

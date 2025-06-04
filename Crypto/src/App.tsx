@@ -2,7 +2,6 @@ import { Outlet } from "react-router-dom";
 import "./App.css";
 import Navbar from "./Components/Navbar";
 import { Toaster } from "react-hot-toast";
-import axios from "axios";
 
 // Get token from localStorage or cookie
 //const token = localStorage.getItem("token");

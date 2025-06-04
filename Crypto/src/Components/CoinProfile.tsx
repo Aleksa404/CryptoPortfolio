@@ -1,12 +1,12 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "react-router";
 import Spinner from "../Components/Spinner";
-import axios from "../axios";
 import { CoinProfileFull } from "../Models/CoinModel";
 import { formatLargeMonetaryNumber } from "../Services/NumberFormatService";
 import { CommentSection } from "./CommentSection";
 import { handleError } from "@/Services/HandleErrorService";
 import { getCoinProfile } from "@/api";
+import PriceAlertForm from "./PriceAlertForm";
 
 const CoinPage = () => {
   //
@@ -89,6 +89,9 @@ const CoinPage = () => {
               <p className="text-xl font-semibold">
                 {formatLargeMonetaryNumber(coin.total_volume)}
               </p>
+            </div>
+            <div className="display-flex items-center justify-center col-span-1 sm:col-span-2">
+              <PriceAlertForm coinId={coin.id} />
             </div>
           </div>
         </div>

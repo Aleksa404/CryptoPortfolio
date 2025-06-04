@@ -46,3 +46,8 @@ export interface PortfolioPageResult {
   coins: PortfolioItem[];
   totalValue: number;
 }
+export interface PriceAlert {
+  coinId: string;
+  targetPrice: number;
+  email: string;
+}

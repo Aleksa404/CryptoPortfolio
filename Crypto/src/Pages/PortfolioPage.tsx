@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
-import axios from "../axios";
+
 import Spinner from "../Components/Spinner";
 import PortfolioCoin from "../Components/PortfolioCoin";
 import { formatLargeMonetaryNumber } from "../Services/NumberFormatService";
-import { useAuth } from "@/Context/AuthContext";
-import { PortfolioItem, PortfolioPageResult } from "@/Models/CoinModel";
+
+import { PortfolioItem } from "@/Models/CoinModel";
 import { getPortfolio } from "@/api";
 import { handleError } from "@/Services/HandleErrorService";
 
@@ -12,8 +12,6 @@ const PortfolioPage = () => {
   const [portfolio, setPortfolio] = useState<PortfolioItem[]>([]);
   const [totalValue, setTotalValue] = useState<number>(0);
   const [isLoading, setIsLoading] = useState(true);
-
-  const { user } = useAuth();
 
   useEffect(() => {
     const getPort = async () => {

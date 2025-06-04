@@ -1,6 +1,5 @@
 import axios from "../axios";
 import { UserProfile } from "../Models/UserModel";
-import { handleError } from "./HandleErrorService";
 
 export async function login(username: string, password: string) {
   try {

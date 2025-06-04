@@ -12,7 +12,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
-
+////"DefaultConnection": "Data Source=DESKTOP-B06S7KN;Initial Catalog=CryptoPortfolio;Integrated Security=True;TrustServerCertificate=True"
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckles
 builder.Services.AddControllers();
@@ -64,7 +64,10 @@ builder.Services.AddCors(options =>
 //     options.ListenAnyIP(5270); // HTTP
 //     options.ListenAnyIP(5001, listenOptions => listenOptions.UseHttps()); // HTTPS
 // });
-
+builder.WebHost.ConfigureKestrel(options =>
+{
+    options.ListenAnyIP(80); // Make sure it's port 80 to match Dockerfile and compose
+});
 
 
 builder.Services.AddControllers().AddNewtonsoftJson(options =>
@@ -74,7 +77,7 @@ builder.Services.AddControllers().AddNewtonsoftJson(options =>
 
 builder.Services.AddDbContext<AppDbContext>(options =>
 {
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
 builder.Services.AddIdentity<AppUser, IdentityRole>(options =>
 {
@@ -145,7 +148,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseCors("AllowFrontend");
 
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 
 app.UseAuthentication();
 app.UseAuthorization();
@@ -153,18 +156,23 @@ app.UseAuthorization();
 app.MapControllers();
 
 
-
-using (var scope = app.Services.CreateScope())
-{
-    var seeder = scope.ServiceProvider.GetRequiredService<CoinSeeder>();
-    await seeder.SeedCoinsAsync();
-}
 // app.MapGet("/send-test-email", async (EmailSenderService sender) =>
 // {
 
 //     await sender.SendEmailAsync();
 //     return Results.Ok("Email sent!");
 // });
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    db.Database.Migrate();
+}
+
+using (var scope = app.Services.CreateScope())
+{
+    var seeder = scope.ServiceProvider.GetRequiredService<CoinSeeder>();
+    await seeder.SeedCoinsAsync();
+}
 
 
 app.Run();
