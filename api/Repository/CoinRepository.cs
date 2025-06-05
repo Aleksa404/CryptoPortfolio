@@ -79,7 +79,7 @@ namespace api.Repository
 
         public Task<bool> CoinExists(string name)
         {
-            return _context.Coins.AnyAsync(s => s.CoinName == name);
+            return _context.Coins.AnyAsync(s => s.CoinName.ToLower() == name.ToLower());
         }
         public async Task<Coin?> UpdateAsync(int id, UpdateCoinDTO coinDto)
         {

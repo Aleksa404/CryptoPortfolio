@@ -21,6 +21,18 @@ namespace api.Mappers
                 CreatedBy = commentModel.AppUser.UserName
             };
         }
+        public static Comment ToCommentFromDto(this CommentDTO commentDto)
+        {
+            return new Comment
+            {
+                Id = commentDto.Id,
+                Title = commentDto.Title,
+                Content = commentDto.Content,
+                CreatedOn = commentDto.CreatedOn,
+                CoinId = commentDto.CoinId,
+                AppUserId = commentDto.CreatedBy
+            };
+        }
         public static Comment ToCommentFromCreate(this CreateCommentDTO commentDto, string name)
         {
             return new Comment

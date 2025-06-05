@@ -7,7 +7,11 @@ import {
   PortfolioPageResult,
   PriceAlert,
 } from "./Models/CoinModel";
-import { PagginatedComments, Comment } from "./Models/CommentModel";
+import {
+  PagginatedComments,
+  Comment,
+  CommentResponse,
+} from "./Models/CommentModel";
 
 export async function getPortfolio() {
   const res = await axios.get<PortfolioPageResult>("/portfolio");
@@ -51,6 +55,13 @@ export async function getComments(coinId: string, page: number) {
   return res.data;
 }
 export async function postComment(coinId: string, newComment: Comment) {
-  const res = await axios.post<Comment>(`/comment/${coinId}`, newComment);
+  const res = await axios.post<CommentResponse>(
+    `/comment/${coinId}`,
+    newComment
+  );
   return res.data;
+}
+export async function deleteComment(commentId: string) {
+  const res = await axios.delete(`/comment/${commentId}`);
+  return res;
 }

@@ -1,9 +1,9 @@
-import { useState, useEffect } from "react";
-import { v4 as uuid } from "uuid";
+import { useState, useEffect, useContext } from "react";
+import { useAuth } from "@/Context/AuthContext";
 import { formatDistanceToNow } from "date-fns";
 
-import { getComments, postComment } from "@/api";
-import { Comment } from "@/Models/CommentModel";
+import { deleteComment, getComments, postComment } from "@/api";
+import { Comment, CommentResponse } from "@/Models/CommentModel";
 
 interface Props {
   coinId: string;
@@ -17,11 +17,12 @@ interface Props {
 // createdAt: string;
 
 export const CommentSection: React.FC<Props> = ({ coinId }) => {
-  const [comments, setComments] = useState<Comment[]>([]);
+  const [comments, setComments] = useState<CommentResponse[]>([]);
   const [text, setText] = useState("");
   const [title, setTitle] = useState("");
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(10);
+  const { user } = useAuth();
 
   useEffect(() => {
     const getComs = async () => {
@@ -36,17 +37,21 @@ export const CommentSection: React.FC<Props> = ({ coinId }) => {
     if (!text.trim()) return;
 
     const newComment: Comment = {
-      id: uuid(),
       title: title,
       content: text,
-      createdOn: new Date().toISOString(),
-      createdBy: "You",
     };
 
     const res = await postComment(coinId, newComment);
     setComments((prev) => [res, ...prev]);
     setTitle("");
     setText("");
+  };
+
+  const onDelete = async (id: string) => {
+    const res = await deleteComment(id);
+    if (res.status == 200) {
+      setComments((prev) => prev.filter((comment) => comment.id !== id));
+    }
   };
 
   return (
@@ -89,7 +94,7 @@ export const CommentSection: React.FC<Props> = ({ coinId }) => {
       <div className="space-y-4">
         {comments.map((comment) => (
           <div
-            key={comment.id}
+            //key={comment.id}
             className="flex items-start gap-4 p-4 rounded-xl border border-gray-200 shadow-sm bg-white hover:shadow-lg transition duration-200"
           >
             <img
@@ -115,6 +120,14 @@ export const CommentSection: React.FC<Props> = ({ coinId }) => {
               <p className="text-sm text-gray-700 leading-snug">
                 {comment.content}
               </p>
+              {comment.createdBy === user?.userName && (
+                <button
+                  onClick={() => onDelete(comment.id)}
+                  className="mt-2 text-red-500 text-sm hover:underline"
+                >
+                  Delete
+                </button>
+              )}
             </div>
           </div>
         ))}

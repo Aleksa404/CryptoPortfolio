@@ -7,6 +7,7 @@ using api.Helpers;
 using api.Interfaces;
 using api.Mappers;
 using api.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
@@ -52,6 +53,7 @@ namespace api.Controllers
             }
             return Ok(comments);
         }
+        [Authorize]
         [HttpPost("{name}")]
         public async Task<IActionResult> Create([FromRoute] string name, [FromBody] CreateCommentDTO commentDto)
         {
@@ -73,9 +75,11 @@ namespace api.Controllers
                 return Unauthorized("User not found");
             }
             commentModel.AppUserId = appUser.Id;
+
             var coin = await _coinRepo.GetByNameAsync(name);
 
-            commentModel.CoinId = coin.Id;
+
+            commentModel.CoinId = coin?.Id;
 
             await _commentRepo.CreateAsync(commentModel);
 

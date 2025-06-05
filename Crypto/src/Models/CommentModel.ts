@@ -1,10 +1,14 @@
 export interface PagginatedComments {
-  items: Comment[];
+  items: CommentResponse[];
   page: number;
   totalPages: number;
 }
 
 export interface Comment {
+  title: string;
+  content: string;
+}
+export interface CommentResponse {
   id: string;
   title: string;
   content: string;
